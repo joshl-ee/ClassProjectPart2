@@ -45,6 +45,7 @@ public class TableManagerImpl implements TableManager{
     Transaction tx = FDBHelper.openTransaction(db);
     if (FDBHelper.doesSubdirectoryExists(tx, tableSubdirectory)) {
       FDBHelper.abortTransaction(tx);
+      FDBHelper.closeTransaction(tx);
       return StatusCode.TABLE_ALREADY_EXISTS;
     }
 
@@ -58,6 +59,7 @@ public class TableManagerImpl implements TableManager{
     StatusCode isPrimaryKeyAdded = tblMetadata.setPrimaryKeys(Arrays.asList(primaryKeyAttributeNames));
     if (isPrimaryKeyAdded != StatusCode.SUCCESS) {
       FDBHelper.abortTransaction(tx);
+      FDBHelper.closeTransaction(tx);
       return StatusCode.TABLE_CREATION_PRIMARY_KEY_NOT_FOUND;
     }
 
@@ -84,6 +86,7 @@ public class TableManagerImpl implements TableManager{
     tableSubdirectory.add(tableName);
     if (!FDBHelper.doesSubdirectoryExists(tx, tableSubdirectory)) {
       FDBHelper.abortTransaction(tx);
+      FDBHelper.closeTransaction(tx);
       return StatusCode.TABLE_NOT_FOUND;
     }
     FDBHelper.dropSubspace(tx, tableSubdirectory);
