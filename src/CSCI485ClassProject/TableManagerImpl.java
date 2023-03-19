@@ -119,6 +119,7 @@ public class TableManagerImpl implements TableManager{
     // check if the table exists
     if (!FDBHelper.doesSubdirectoryExists(tx,Collections.singletonList(tableName))) {
       FDBHelper.abortTransaction(tx);
+      FDBHelper.closeTransaction(tx);
       return StatusCode.TABLE_NOT_FOUND;
     }
     // retrieve attributes of the table, check if attributes exists
@@ -131,6 +132,7 @@ public class TableManagerImpl implements TableManager{
     if (pair != null) {
       // KVPair exists
       FDBHelper.abortTransaction(tx);
+      FDBHelper.closeTransaction(tx);
       return StatusCode.ATTRIBUTE_ALREADY_EXISTS;
     }
 
@@ -147,6 +149,7 @@ public class TableManagerImpl implements TableManager{
     // check if the table exists
     if (!FDBHelper.doesSubdirectoryExists(tx,Collections.singletonList(tableName))) {
       FDBHelper.abortTransaction(tx);
+      FDBHelper.closeTransaction(tx);
       return StatusCode.TABLE_NOT_FOUND;
     }
 
@@ -159,6 +162,7 @@ public class TableManagerImpl implements TableManager{
     if (pair == null) {
       // KVPair not exists
       FDBHelper.abortTransaction(tx);
+      FDBHelper.closeTransaction(tx);
       return StatusCode.ATTRIBUTE_NOT_FOUND;
     }
     // if exists, remove the attribute corresponding kvPair
