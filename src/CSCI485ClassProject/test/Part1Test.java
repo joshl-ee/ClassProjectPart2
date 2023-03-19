@@ -9,6 +9,7 @@ import CSCI485ClassProject.TableManager;
 import CSCI485ClassProject.TableManagerImpl;
 import CSCI485ClassProject.models.TableMetadata;
 import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -32,6 +33,9 @@ public class Part1Test {
   public void init(){
     tableManager = new TableManagerImpl();
   }
+
+  @After
+  public void close() { tableManager.closeDatabase(); }
 
   /**
    * Points: 10

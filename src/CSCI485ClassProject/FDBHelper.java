@@ -31,6 +31,14 @@ public class FDBHelper {
         return db;
     }
 
+    public static void close(Database db) {
+        try {
+            db.close();
+        } catch (Exception e) {
+            System.out.println("ERROR: the database is not successfully closed: " + e);
+        }
+    }
+
     public static void setFDBKVPair(DirectorySubspace tgtSubspace, Transaction tx, FDBKVPair kv) {
         if (tgtSubspace == null) {
             tgtSubspace = FDBHelper.createOrOpenSubspace(tx, kv.getSubspacePath());
@@ -128,5 +136,9 @@ public class FDBHelper {
 
     public static void abortTransaction(Transaction tx) {
         tx.cancel();
+    }
+
+    public static void closeTransaction(Transaction tx) {
+        tx.close();
     }
 }

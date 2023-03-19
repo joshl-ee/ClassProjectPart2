@@ -70,7 +70,7 @@ public class TableManagerImpl implements TableManager{
       FDBHelper.setFDBKVPair(tableAttrSpace, tx, kvPair);
     }
     FDBHelper.commitTransaction(tx);
-
+    FDBHelper.closeTransaction(tx);
     return StatusCode.SUCCESS;
   }
 
@@ -88,6 +88,7 @@ public class TableManagerImpl implements TableManager{
     }
     FDBHelper.dropSubspace(tx, tableSubdirectory);
     FDBHelper.commitTransaction(tx);
+    FDBHelper.closeTransaction(tx);
     return StatusCode.SUCCESS;
   }
 
@@ -107,6 +108,7 @@ public class TableManagerImpl implements TableManager{
     }
 
     FDBHelper.commitTransaction(readTx);
+    FDBHelper.closeTransaction(readTx);
     return res;
   }
 
@@ -135,6 +137,7 @@ public class TableManagerImpl implements TableManager{
     FDBHelper.setFDBKVPair(tableAttrDir, tx, tblTransformer.getAttributeKVPair(attributeName, attributeType));
 
     FDBHelper.commitTransaction(tx);
+    FDBHelper.closeTransaction(tx);
     return StatusCode.SUCCESS;
   }
 
@@ -161,6 +164,7 @@ public class TableManagerImpl implements TableManager{
     // if exists, remove the attribute corresponding kvPair
     FDBHelper.removeKeyValuePair(tx, tableAttrDir, pair.getKey());
     FDBHelper.commitTransaction(tx);
+    FDBHelper.closeTransaction(tx);
 
     return StatusCode.SUCCESS;
   }
@@ -170,5 +174,10 @@ public class TableManagerImpl implements TableManager{
     // your code
     FDBHelper.clear(db);
     return StatusCode.SUCCESS;
+  }
+
+  @Override
+  public void closeDatabase() {
+    FDBHelper.close(db);
   }
 }

@@ -83,4 +83,9 @@ public interface TableManager {
    * @return status code
    */
   public StatusCode dropAllTables();
+
+  /**
+   * Close the database after all operations are run
+   */
+  public void closeDatabase();
 }
