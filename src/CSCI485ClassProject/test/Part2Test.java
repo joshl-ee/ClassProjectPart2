@@ -39,10 +39,8 @@ public class Part2Test {
   public static String[] EmployeeTablePKAttributes = new String[]{"SSN"};
 
 
-  public static int initialNumberOfRecords = 10;
+  public static int initialNumberOfRecords = 100;
   public static int updatedNumberOfRecords = initialNumberOfRecords / 2;
-
-  public static int numberOfRecords = 0;
 
   private TableManager tableManager;
   private Records records;
@@ -100,7 +98,6 @@ public class Part2Test {
       Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address};
 
       assertEquals(StatusCode.SUCCESS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, EmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
-      numberOfRecords++;
     }
 
     assertEquals(StatusCode.DATA_RECORD_PRIMARY_KEYS_UNMATCHED, records.insertRecord(EmployeeTableName, new String[]{}, new String[]{}, new String[]{"Name"}, new Object[]{"Bob"}));
@@ -170,6 +167,7 @@ public class Part2Test {
       ssn--;
     }
 
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
     assertEquals(-1, ssn);
     System.out.println("Test2 passed!");
   }
@@ -193,7 +191,6 @@ public class Part2Test {
       Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address, salary};
 
       assertEquals(StatusCode.SUCCESS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, UpdatedEmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
-      numberOfRecords++;
     }
 
     // verify the schema changing
@@ -245,6 +242,7 @@ public class Part2Test {
       assertEquals(address, record.getValueForGivenAttrName(Address));
     }
     assertNull(records.getNext(cursor));
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
     System.out.println("Test4 passed!");
   }
 
@@ -279,8 +277,8 @@ public class Part2Test {
         assertEquals(salary, record.getValueForGivenAttrName(Salary));
       }
       assertNull(records.getNext(cursor));
+      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
     }
-
     System.out.println("Test5 passed!");
   }
 
@@ -340,6 +338,7 @@ public class Part2Test {
         // odd records should have gone
         assertNull(rec);
       }
+      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
     }
 
     System.out.println("Test6 passed!");
@@ -454,6 +453,8 @@ public class Part2Test {
         // even records should have gone
         assertNull(rec);
       }
+
+      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
     }
     System.out.println("Test7 passed!");
   }
