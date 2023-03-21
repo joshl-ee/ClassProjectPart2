@@ -50,6 +50,8 @@ public class RecordsImpl implements Records{
       if (!(primaryKey instanceof String && tableAttributes.get(primaryKeys[i]) == AttributeType.VARCHAR) &&
           !((primaryKey instanceof Integer || primaryKey instanceof Long) && tableAttributes.get(primaryKeys[i]) == AttributeType.INT) &&
           !(primaryKey instanceof Double && tableAttributes.get(primaryKeys[i]) == AttributeType.DOUBLE)) {
+        FDBHelper.abortTransaction(tx);
+        FDBHelper.closeTransaction(tx);
         return StatusCode.DATA_RECORD_PRIMARY_KEYS_UNMATCHED;
       }
     }
@@ -60,6 +62,8 @@ public class RecordsImpl implements Records{
       if (!(attribute instanceof String && tableAttributes.get(attrNames[i]) == AttributeType.VARCHAR) &&
               !((attribute instanceof Integer || attribute instanceof Long) && tableAttributes.get(attrNames[i]) == AttributeType.INT) &&
               !(attribute instanceof Double && tableAttributes.get(attrNames[i]) == AttributeType.DOUBLE)) {
+        FDBHelper.abortTransaction(tx);
+        FDBHelper.closeTransaction(tx);
         return StatusCode.DATA_RECORD_CREATION_ATTRIBUTE_TYPE_UNMATCHED;
       }
     }
@@ -71,7 +75,8 @@ public class RecordsImpl implements Records{
 //      FDBHelper.closeTransaction(tx);
 //      return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
 //    }
-
+    FDBHelper.commitTransaction(tx);
+    FDBHelper.closeTransaction(tx);
     return StatusCode.SUCCESS;
   }
 
