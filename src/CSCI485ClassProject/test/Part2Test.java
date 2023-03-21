@@ -67,12 +67,15 @@ public class Part2Test {
   }
 
   @Before
-  public void init(){
+  public void init() {
     tableManager = new TableManagerImpl();
     records = new RecordsImpl();
   }
   @After
-  public void close() { tableManager.closeDatabase(); }
+  public void close() {
+    tableManager.closeDatabase();
+    records.closeDatabase();
+  }
 
   /**
    * Points: 10

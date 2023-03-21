@@ -44,6 +44,8 @@ public class RecordsImpl implements Records{
 
     TableManagerImpl tableManager = new TableManagerImpl();
     HashMap<String, AttributeType> tableAttributes = tableManager.listTables().get(tableName).getAttributes();
+    tableManager.closeDatabase();
+
     // Check if given PKs are correct type
     for (int i = 0; i < primaryKeys.length; i++) {
       Object primaryKey = primaryKeysValues[i];
@@ -138,5 +140,9 @@ public class RecordsImpl implements Records{
   @Override
   public StatusCode deleteDataRecord(String tableName, String[] attrNames, Object[] attrValues) {
     return null;
+  }
+  @Override
+  public void closeDatabase() {
+    FDBHelper.close(db);
   }
 }
