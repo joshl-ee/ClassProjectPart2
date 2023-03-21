@@ -10,7 +10,8 @@ import java.util.Map;
 
 public class TableMetadataTransformer {
 
-    private List<String> tableAttributeStorePath;
+    private final List<String> tableAttributeStorePath;
+    private final List<String> tableRecordStorePath;
 
     public FDBKVPair getAttributeKVPair(String attributeName, AttributeType attributeType) {
         Tuple keyTuple = getTableAttributeKeyTuple(attributeName);
@@ -25,12 +26,21 @@ public class TableMetadataTransformer {
 
     public TableMetadataTransformer(String tableName) {
         tableAttributeStorePath = new ArrayList<>();
+        tableRecordStorePath = new ArrayList<>();
+
         tableAttributeStorePath.add(tableName);
+        tableRecordStorePath.add(tableName);
+
         tableAttributeStorePath.add(DBConf.METADATA_TABLE_ATTR_STORE);
+        tableRecordStorePath.add(DBConf.DATA_TABLE_RCRD_STORE);
     }
 
     public List<String> getTableAttributeStorePath() {
         return tableAttributeStorePath;
+    }
+
+    public List<String> getTableRecordStorePath() {
+        return tableRecordStorePath;
     }
 
     public TableMetadata convertBackToTableMetadata(List<FDBKVPair> pairs) {

@@ -66,6 +66,7 @@ public class TableManagerImpl implements TableManager{
     // persist the creation
     TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     DirectorySubspace tableAttrSpace = FDBHelper.createOrOpenSubspace(tx, transformer.getTableAttributeStorePath());
+    FDBHelper.createOrOpenSubspace(tx, transformer.getTableRecordStorePath());
 
     List<FDBKVPair> pairs = transformer.convertToFDBKVPairs(tblMetadata);
     for (FDBKVPair kvPair : pairs) {
