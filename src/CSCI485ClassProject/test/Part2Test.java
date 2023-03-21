@@ -112,71 +112,71 @@ public class Part2Test {
     System.out.println("Test1 passed!");
   }
 
-//  /**
-//   * Points: 15
-//   */
-//  @Test
-//  public void unitTest2() {
-//    Cursor cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ);
-//    assertNotNull(cursor);
-//
-//    // initialize the first record
-//    Record rec = records.getFirst(cursor);
-//    // verify the first record
-//    assertNotNull(rec);
-//    long ssn = 0;
-//    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//    ssn++;
-//
-//    while (true) {
-//      rec = records.getNext(cursor);
-//      if (rec == null) {
-//        break;
-//      }
-//      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//      ssn++;
-//    }
-//
-//    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    assertEquals(ssn, initialNumberOfRecords);
-//
-//    // use getLast to verify again
-//    cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ);
-//    assertNotNull(cursor);
-//    rec = records.getLast(cursor);
-//    ssn--;
-//    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//    ssn--;
-//
-//    while (true) {
-//      rec = records.getPrevious(cursor);
-//      if (rec == null) {
-//        break;
-//      }
-//      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//      ssn--;
-//    }
-//
-//    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    assertEquals(-1, ssn);
-//    System.out.println("Test2 passed!");
-//  }
+  /**
+   * Points: 15
+   */
+  @Test
+  public void unitTest2() {
+    Cursor cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ);
+    assertNotNull(cursor);
+
+    // initialize the first record
+    Record rec = records.getFirst(cursor);
+    // verify the first record
+    assertNotNull(rec);
+    long ssn = 0;
+    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+    ssn++;
+
+    while (true) {
+      rec = records.getNext(cursor);
+      if (rec == null) {
+        break;
+      }
+      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+      ssn++;
+    }
+
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    assertEquals(ssn, initialNumberOfRecords);
+
+    // use getLast to verify again
+    cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ);
+    assertNotNull(cursor);
+    rec = records.getLast(cursor);
+    ssn--;
+    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+    ssn--;
+
+    while (true) {
+      rec = records.getPrevious(cursor);
+      if (rec == null) {
+        break;
+      }
+      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+      ssn--;
+    }
+
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    assertEquals(-1, ssn);
+    System.out.println("Test2 passed!");
+  }
 //
 //  /**
 //   * Points: 15

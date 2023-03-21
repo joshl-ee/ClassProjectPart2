@@ -10,6 +10,7 @@ import com.apple.foundationdb.tuple.Tuple;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class RecordsImpl implements Records{
 
@@ -18,6 +19,7 @@ public class RecordsImpl implements Records{
   public RecordsImpl() {
     db = FDBHelper.initialization();
   }
+
   @Override
   public StatusCode insertRecord(String tableName, String[] primaryKeys, Object[] primaryKeysValues, String[] attrNames, Object[] attrValues) {
 
@@ -30,13 +32,13 @@ public class RecordsImpl implements Records{
     }
 
     // Check if given primary keys are valid
-    if (primaryKeys == null || primaryKeysValues == null || primaryKeys.length == 0 || primaryKeysValues.length == 0) {
+    if (primaryKeys == null || primaryKeysValues == null || primaryKeys.length == 0 || primaryKeysValues.length == 0 || primaryKeys.length != primaryKeysValues.length) {
       FDBHelper.abortTransaction(tx);
       FDBHelper.closeTransaction(tx);
       return StatusCode.DATA_RECORD_PRIMARY_KEYS_UNMATCHED;
     }
     // Check if given attributes are valid
-    if (attrNames == null || attrValues == null || attrNames.length == 0 || attrValues.length == 0) {
+    if (attrNames == null || attrValues == null || attrNames.length == 0 || attrValues.length == 0 || attrNames.length != attrValues.length) {
       FDBHelper.abortTransaction(tx);
       FDBHelper.closeTransaction(tx);
       return StatusCode.DATA_RECORD_CREATION_ATTRIBUTES_INVALID;
@@ -70,13 +72,20 @@ public class RecordsImpl implements Records{
       }
     }
 
-    // Check if KVP with primary key already exists
-//    DirectorySubspace directory = FDBHelper.openSubspace(tx, transformer.getTableRecordStorePath());
-//    if (FDBHelper.getCertainKeyValuePairInSubdirectory(directory, tx, new Tuple().addObject(primaryKeysValues), transformer.getTableRecordStorePath()) == null) {
-//      FDBHelper.abortTransaction(tx);
-//      FDBHelper.closeTransaction(tx);
-//      return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
-//    }
+    // Insert record to FDB. NOTE: If primaryKeys.length > 1, there must be a way to guarantee its tuple insert order.
+    Tuple keyTuple = new Tuple();
+    for (Object primaryKey : primaryKeysValues) {
+      keyTuple.addObject(primaryKey);
+    }
+    Tuple valueTuple = new Tuple();
+    for (Object attribute : attrValues) {
+      valueTuple.addObject(attribute);
+    }
+    TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
+    List<String> recordPath = transformer.getTableRecordStorePath();
+    DirectorySubspace dir = FDBHelper.openSubspace(tx, recordPath);
+    FDBHelper.setFDBKVPair(dir, tx, new FDBKVPair(recordPath, keyTuple, valueTuple));
+
     FDBHelper.commitTransaction(tx);
     FDBHelper.closeTransaction(tx);
     return StatusCode.SUCCESS;
