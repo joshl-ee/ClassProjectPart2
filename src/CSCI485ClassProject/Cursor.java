@@ -54,7 +54,6 @@ public class Cursor {
   public FDBKVPair getFirst() {
     if (startFromBeginning != null) return null;
     startFromBeginning = true;
-    System.out.println("here1");
     List<FDBKVPair> KVPairs = FDBHelper.getAllKeyValuePairsOfSubdirectory(db, tx, path);
     if (KVPairs.isEmpty()) return null;
     return KVPairs.get(0);

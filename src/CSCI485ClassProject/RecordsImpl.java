@@ -158,7 +158,6 @@ public class RecordsImpl implements Records{
   public Record getFirst(Cursor cursor) {
     FDBKVPair KVPair = cursor.getFirst();
     if (KVPair == null) {
-      System.out.println("I am returning here");
       return null;
     }
     Record record = new Record();
