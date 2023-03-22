@@ -85,6 +85,7 @@ public class RecordsImpl implements Records{
 //    System.out.println(pair.getKey());
 //    System.out.println(pair.getValue());
     if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
+      System.out.println(FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath).getKey());
       FDBHelper.abortTransaction(tx);
       FDBHelper.closeTransaction(tx);
       return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
