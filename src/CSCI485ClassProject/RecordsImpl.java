@@ -86,7 +86,7 @@ public class RecordsImpl implements Records{
       }
       keyTuple = keyTuple.addObject(attrNames[i]);
 
-      // Check if keyAlready exists
+      // Check if key already exists
       if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
         System.out.println(recordPath);
         System.out.println(primaryKeysValues[0]);
