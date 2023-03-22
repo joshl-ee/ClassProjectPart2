@@ -80,7 +80,7 @@ public class RecordsImpl implements Records{
     TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     List<String> recordPath = transformer.getTableRecordStorePath();
     DirectorySubspace dir = FDBHelper.openSubspace(tx, recordPath);
-    if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath).getValue().get(0) != null) {
+    if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath).getValue() != null) {
       FDBHelper.abortTransaction(tx);
       FDBHelper.closeTransaction(tx);
       return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
