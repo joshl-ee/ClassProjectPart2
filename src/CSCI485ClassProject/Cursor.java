@@ -50,8 +50,8 @@ public class Cursor {
   public FDBKVPair getFirst() {
     if (startFromBeginning != null) return null;
     startFromBeginning = true;
-    currKey = null;
     List<FDBKVPair> KVPairs = FDBHelper.getAllKeyValuePairsOfSubdirectory(db, tx, path);
+    System.out.println(KVPairs);
     if (KVPairs.isEmpty()) return null;
     return KVPairs.get(0);
   }

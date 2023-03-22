@@ -99,7 +99,6 @@ public class Part2Test {
       String email = getEmail(i);
       long age = getAge(i);
       String address = getAddress(i);
-      System.out.println(ssn);
       Object[] primaryKeyVal = new Object[] {ssn};
       Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address};
 

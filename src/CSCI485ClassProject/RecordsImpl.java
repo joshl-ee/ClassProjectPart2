@@ -76,7 +76,6 @@ public class RecordsImpl implements Records{
     Tuple keyTuple = new Tuple();
     for (Object primaryKey : primaryKeysValues) {
       keyTuple.addObject(primaryKey);
-      System.out.println(primaryKey);
     }
     TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     List<String> recordPath = transformer.getTableRecordStorePath();
