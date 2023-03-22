@@ -54,8 +54,6 @@ public class FDBHelper {
     public static List<FDBKVPair> getAllKeyValuePairsOfSubdirectory(Database db, Transaction tx, List<String> path) {
         List<FDBKVPair> res = new ArrayList<>();
         if (!doesSubdirectoryExists(tx, path)) {
-            System.out.println("here");
-
             return res;
         }
         DirectorySubspace dir = FDBHelper.createOrOpenSubspace(tx, path);
