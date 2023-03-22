@@ -89,6 +89,7 @@ public class RecordsImpl implements Records{
       // Check if keyAlready exists
       if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
         System.out.println(recordPath);
+        System.out.println(primaryKeysValues[0]);
         System.out.println(keyTuple.get(0) + " " + keyTuple.get(1));
         FDBHelper.abortTransaction(tx);
         FDBHelper.closeTransaction(tx);
