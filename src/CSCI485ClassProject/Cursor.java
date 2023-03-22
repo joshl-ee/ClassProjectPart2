@@ -1,6 +1,7 @@
 package CSCI485ClassProject;
 
 import CSCI485ClassProject.models.ComparisonOperator;
+import CSCI485ClassProject.models.TableMetadata;
 import com.apple.foundationdb.Database;
 import com.apple.foundationdb.Transaction;
 import com.apple.foundationdb.directory.DirectorySubspace;
@@ -19,6 +20,7 @@ public class Cursor {
   private final Mode mode;
   private final String tableName;
   private final DirectorySubspace subspace;
+  private final TableMetadata metadata;
   private final List<String> path;
   private final Transaction tx;
   private byte[] st;
@@ -30,6 +32,7 @@ public class Cursor {
   public Cursor(String tableName, Cursor.Mode mode, Database db, Transaction tx) {
     this.mode = mode;
     this.tableName = tableName;
+    this.metadata = new TableManagerImpl().listTables().get(tableName);
     TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     this.path = transformer.getTableRecordStorePath();
     this.subspace = FDBHelper.openSubspace(tx, path);
@@ -40,6 +43,7 @@ public class Cursor {
   public Cursor(String tableName, String attrName, Object attrValue, ComparisonOperator operator, Cursor.Mode mode, boolean isUsingIndex, Database db, Transaction tx) {
     this.mode = mode;
     this.tableName = tableName;
+    this.metadata = new TableManagerImpl().listTables().get(tableName);
     TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     this.path = transformer.getTableRecordStorePath();
     this.subspace = FDBHelper.openSubspace(tx, path);
@@ -51,7 +55,6 @@ public class Cursor {
     if (startFromBeginning != null) return null;
     startFromBeginning = true;
     List<FDBKVPair> KVPairs = FDBHelper.getAllKeyValuePairsOfSubdirectory(db, tx, path);
-    System.out.println(KVPairs);
     if (KVPairs.isEmpty()) return null;
     return KVPairs.get(0);
   }
@@ -62,6 +65,10 @@ public class Cursor {
     List<FDBKVPair> KVPairs = FDBHelper.getAllKeyValuePairsOfSubdirectory(db, tx, path);
     if (KVPairs.isEmpty()) return null;
     return KVPairs.get(KVPairs.size()-1);
+  }
+
+  public TableMetadata getMetadata() {
+    return metadata;
   }
 }
 

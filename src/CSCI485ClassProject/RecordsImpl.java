@@ -124,9 +124,15 @@ public class RecordsImpl implements Records{
   @Override
   public Record getFirst(Cursor cursor) {
     FDBKVPair KVPair = cursor.getFirst();
-
-    //
-    return null;
+    if (KVPair == null) return null;
+    Record record = new Record();
+    Tuple values = KVPair.getValue();
+    int i = 0;
+    for (String attribute : cursor.getMetadata().getAttributes().keySet()) {
+      record.setAttrNameAndValue(attribute, values.getNestedList(i));
+      i++;
+    }
+    return record;
   }
 
   @Override
