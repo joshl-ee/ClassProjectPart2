@@ -81,15 +81,16 @@ public class RecordsImpl implements Records{
     TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     List<String> recordPath = transformer.getTableRecordStorePath();
     DirectorySubspace dir = FDBHelper.openSubspace(tx, recordPath);
+    // TODO: WHAT THE FUCK. getCERTAINKEYVALUEPAIR DOES NOT WORKKK
 //    FDBKVPair pair = FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath);
 //    System.out.println(pair.getKey());
 //    System.out.println(pair.getValue());
-    if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
-      System.out.println(FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath).getValue());
-      FDBHelper.abortTransaction(tx);
-      FDBHelper.closeTransaction(tx);
-      return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
-    }
+//    if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
+//      System.out.println(FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath).getValue());
+//      FDBHelper.abortTransaction(tx);
+//      FDBHelper.closeTransaction(tx);
+//      return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
+//    }
 
     // Insert record to FDB. NOTE: If primaryKeys.length > 1, there must be a way to guarantee its tuple insert order.
     Tuple valueTuple = new Tuple();
