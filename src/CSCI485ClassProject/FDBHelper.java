@@ -79,6 +79,7 @@ public class FDBHelper {
             return null;
         }
         Tuple value = Tuple.fromBytes(valBytes);
+        System.out.println(valBytes);
         return new FDBKVPair(path, keyTuple, value);
     }
 
