@@ -72,18 +72,25 @@ public class RecordsImpl implements Records{
       }
     }
 
-    // Insert record to FDB. NOTE: If primaryKeys.length > 1, there must be a way to guarantee its tuple insert order.
+    // Check if primary key already exists
     Tuple keyTuple = new Tuple();
     for (Object primaryKey : primaryKeysValues) {
       keyTuple.addObject(primaryKey);
     }
+    TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
+    List<String> recordPath = transformer.getTableRecordStorePath();
+    DirectorySubspace dir = FDBHelper.openSubspace(tx, recordPath);
+    if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
+      FDBHelper.abortTransaction(tx);
+      FDBHelper.closeTransaction(tx);
+      return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
+    }
+
+    // Insert record to FDB. NOTE: If primaryKeys.length > 1, there must be a way to guarantee its tuple insert order.
     Tuple valueTuple = new Tuple();
     for (Object attribute : attrValues) {
       valueTuple.addObject(attribute);
     }
-    TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
-    List<String> recordPath = transformer.getTableRecordStorePath();
-    DirectorySubspace dir = FDBHelper.openSubspace(tx, recordPath);
     FDBHelper.setFDBKVPair(dir, tx, new FDBKVPair(recordPath, keyTuple, valueTuple));
 
     FDBHelper.commitTransaction(tx);
@@ -94,7 +101,10 @@ public class RecordsImpl implements Records{
   @Override
   public Cursor openCursor(String tableName, Cursor.Mode mode) {
     Transaction tx = FDBHelper.openTransaction(db);
-    Cursor cursor = new Cursor(tableName, mode, tx);
+    Cursor cursor = new Cursor(tableName, mode, db, tx);
+
+
+
     return cursor;
   }
 
@@ -102,17 +112,21 @@ public class RecordsImpl implements Records{
   @Override
   public Cursor openCursor(String tableName, String attrName, Object attrValue, ComparisonOperator operator, Cursor.Mode mode, boolean isUsingIndex) {
     Transaction tx = FDBHelper.openTransaction(db);
-    Cursor cursor = new Cursor(tableName, attrName, attrValue, operator, mode, isUsingIndex, tx);
+    Cursor cursor = new Cursor(tableName, attrName, attrValue, operator, mode, isUsingIndex, db, tx);
     return cursor;
   }
 
   @Override
   public Record getFirst(Cursor cursor) {
+    FDBKVPair KVPair = cursor.getFirst();
+
+    //
     return null;
   }
 
   @Override
   public Record getLast(Cursor cursor) {
+    FDBKVPair KVPair = cursor.getLast();
     return null;
   }
 
