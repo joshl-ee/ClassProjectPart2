@@ -130,11 +130,12 @@ public class RecordsImpl implements Records{
     }
     Record record = new Record();
     Tuple values = KVPair.getValue();
-    int i = 0;
-    for (String attribute : cursor.getMetadata().getAttributes().keySet()) {
-      record.setAttrNameAndValue(attribute, values.getNestedList(i));
-      i++;
-    }
+    // TODO: we cannot assume that attributes will be given in order
+//    int i = 0;
+//    for (String attribute : cursor.getMetadata().getAttributes().keySet()) {
+//      record.setAttrNameAndValue(attribute, values.getNestedList(i));
+//      i++;
+//    }
     return record;
   }
 
