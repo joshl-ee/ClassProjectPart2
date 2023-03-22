@@ -72,31 +72,61 @@ public class RecordsImpl implements Records{
       }
     }
 
-    // Check if primary key already exists
-    Tuple keyTuple = new Tuple();
-    for (Object primaryKey : primaryKeysValues) {
-      keyTuple.addObject(primaryKey);
-    }
+    // Pre-work. Get directory information.
     TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     List<String> recordPath = transformer.getTableRecordStorePath();
     DirectorySubspace dir = FDBHelper.openSubspace(tx, recordPath);
-    // TODO: WHAT THE FUCK. getCERTAINKEYVALUEPAIR DOES NOT WORKKK
-//    FDBKVPair pair = FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath);
-//    System.out.println(pair.getKey());
-//    System.out.println(pair.getValue());
-//    if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
-//      System.out.println(FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath).getValue());
-//      FDBHelper.abortTransaction(tx);
-//      FDBHelper.closeTransaction(tx);
-//      return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
-//    }
 
-    // Insert record to FDB. NOTE: If primaryKeys.length > 1, there must be a way to guarantee its tuple insert order.
-    Tuple valueTuple = new Tuple();
-    for (Object attribute : attrValues) {
-      valueTuple.addObject(attribute);
+    // For each attribute make KVPair where (K, V) -> (PK + AttributeName, AttibuteValue)
+    for (int i = 0; i < attrNames.length; i++) {
+      // Create keyTuple
+      Tuple keyTuple = new Tuple();
+      for (Object primaryKey : primaryKeysValues) {
+        keyTuple.addObject(primaryKey);
+      }
+      keyTuple.addObject(attrNames[i]);
+
+      // Check if keyAlready exists
+      if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
+        FDBHelper.abortTransaction(tx);
+        FDBHelper.closeTransaction(tx);
+        return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
+      }
+
+      // Create valueTuple
+      Tuple valueTuple = new Tuple();
+      valueTuple.addObject(attrValues[i]);
+
+      // Add to FDB
+      FDBHelper.setFDBKVPair(dir, tx, new FDBKVPair(recordPath, keyTuple, valueTuple));
     }
-    FDBHelper.setFDBKVPair(dir, tx, new FDBKVPair(recordPath, keyTuple, valueTuple));
+//
+//    // TODO: Delete below if not needed
+//    // Check if primary key already exists
+//    Tuple keyTuple = new Tuple();
+//    for (Object primaryKey : primaryKeysValues) {
+//      keyTuple.addObject(primaryKey);
+//    }
+//    TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
+//    List<String> recordPath = transformer.getTableRecordStorePath();
+//    DirectorySubspace dir = FDBHelper.openSubspace(tx, recordPath);
+//    // TODO: WHAT THE FUCK. getCERTAINKEYVALUEPAIR DOES NOT WORKKK
+////    FDBKVPair pair = FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath);
+////    System.out.println(pair.getKey());
+////    System.out.println(pair.getValue());
+////    if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
+////      System.out.println(FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath).getValue());
+////      FDBHelper.abortTransaction(tx);
+////      FDBHelper.closeTransaction(tx);
+////      return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
+////    }
+//
+//    // Insert record to FDB. NOTE: If primaryKeys.length > 1, there must be a way to guarantee its tuple insert order.
+//    for (Object attribute : attrValues) {
+//      Tuple valueTuple = new Tuple();
+//      valueTuple.addObject(attribute);
+//      FDBHelper.setFDBKVPair(dir, tx, new FDBKVPair(recordPath, keyTuple, valueTuple));
+//    }
 
     FDBHelper.commitTransaction(tx);
     FDBHelper.closeTransaction(tx);
