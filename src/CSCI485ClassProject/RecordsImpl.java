@@ -82,9 +82,9 @@ public class RecordsImpl implements Records{
       // Create keyTuple
       Tuple keyTuple = new Tuple();
       for (Object primaryKey : primaryKeysValues) {
-        keyTuple.addObject(primaryKey);
+        keyTuple = keyTuple.addObject(primaryKey);
       }
-      keyTuple.addObject(attrNames[i]);
+      keyTuple = keyTuple.addObject(attrNames[i]);
 
       // Check if keyAlready exists
       if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
