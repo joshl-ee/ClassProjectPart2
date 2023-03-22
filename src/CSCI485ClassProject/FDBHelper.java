@@ -56,7 +56,7 @@ public class FDBHelper {
         if (!doesSubdirectoryExists(tx, path)) {
             return res;
         }
-
+        System.out.println("here");
         DirectorySubspace dir = FDBHelper.createOrOpenSubspace(tx, path);
         Range range = dir.range();
 
