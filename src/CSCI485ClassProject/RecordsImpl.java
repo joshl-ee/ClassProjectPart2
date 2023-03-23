@@ -151,7 +151,7 @@ public class RecordsImpl implements Records{
     tableManager.closeDatabase();
     int i;
     for (i = 0; i < primaryKeys.size(); i++) {
-      record.setAttrNameAndValue(primaryKeys.get(i), KVPair.get(i).getKey().getString(i));
+      record.setAttrNameAndValue(primaryKeys.get(i), KVPair.get(i).getKey().get(i));
     }
     // Set attributes
     for (FDBKVPair kvpair: KVPair) {
