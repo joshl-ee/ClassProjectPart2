@@ -95,9 +95,10 @@ public class Cursor {
     if (iterator.hasNext()) {
       KeyValue first = iterator.next();
       pk = getPKFromKeyValue(first, pk);
+      Object pkValue = pk.get(0);
       keyvalueList.add(first);
     }
-    while (curr != null && getPKFromKeyValue(curr, pk.add(false)).equals(pk)) {
+    while (curr != null && getPKFromKeyValue(curr, new Tuple()).equals(pk)) {
       System.out.println("While loop entered");
       keyvalueList.add(curr);
       curr = iterator.next();
