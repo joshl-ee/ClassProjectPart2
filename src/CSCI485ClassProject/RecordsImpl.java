@@ -157,7 +157,7 @@ public class RecordsImpl implements Records{
     for (FDBKVPair kvpair: KVPair) {
       System.out.println("0th: " + kvpair.getValue().get(0));
 
-      record.setAttrNameAndValue(kvpair.getKey().getString(i), kvpair.getValue().get(1));
+      record.setAttrNameAndValue(kvpair.getKey().getString(i), kvpair.getValue().get(0));
     }
     return record;
   }

@@ -105,6 +105,7 @@ public class Cursor {
   }
 
   public Tuple getPKFromKeyValue(KeyValue keyvalue, Tuple pk) {
+    System.out.println("Size of primary keys: " + metadata.getPrimaryKeys().size());
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
       System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + isNull(keyvalue));
       // popFront is needed since first value in key is for something else
