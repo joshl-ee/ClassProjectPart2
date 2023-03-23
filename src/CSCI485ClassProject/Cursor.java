@@ -37,7 +37,10 @@ public class Cursor {
   public Cursor(String tableName, Cursor.Mode mode, Database db, Transaction tx) {
     this.mode = mode;
     this.tableName = tableName;
-    this.metadata = new TableManagerImpl().listTables().get(tableName);
+    TableManager tableManager = new TableManagerImpl();
+    this.metadata = tableManager.listTables().get(tableName);
+    tableManager.closeDatabase();
+
     TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     this.path = transformer.getTableRecordStorePath();
     this.subspace = FDBHelper.openSubspace(tx, path);
@@ -48,8 +51,9 @@ public class Cursor {
   public Cursor(String tableName, String attrName, Object attrValue, ComparisonOperator operator, Cursor.Mode mode, boolean isUsingIndex, Database db, Transaction tx) {
     this.mode = mode;
     this.tableName = tableName;
-    this.metadata = new TableManagerImpl().listTables().get(tableName);
-    TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
+    TableManager tableManager = new TableManagerImpl();
+    this.metadata = tableManager.listTables().get(tableName);
+    tableManager.closeDatabase();    TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     this.path = transformer.getTableRecordStorePath();
     this.subspace = FDBHelper.openSubspace(tx, path);
     this.tx = tx;
