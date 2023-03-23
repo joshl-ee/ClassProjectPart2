@@ -67,9 +67,9 @@ public class Cursor {
     // Get PK of first record
     if (iterator.hasNext()) {
       KeyValue first = iterator.next();
-      System.out.println("Firstvalue: " + Tuple.fromBytes(first.getKey()).get(0));
-      System.out.println("Secondvalue: " + Tuple.fromBytes(first.getKey()).get(1));
-      System.out.println("Thurdvalue: " + Tuple.fromBytes(first.getKey()).get(2));
+//      System.out.println("Firstvalue: " + Tuple.fromBytes(first.getKey()).get(0));
+//      System.out.println("Secondvalue: " + Tuple.fromBytes(first.getKey()).get(1));
+//      System.out.println("Thurdvalue: " + Tuple.fromBytes(first.getKey()).get(2));
 
       pk = getPKFromKeyValue(first, pk);
       keyvalueList.add(first);
@@ -107,7 +107,8 @@ public class Cursor {
   public Tuple getPKFromKeyValue(KeyValue keyvalue, Tuple pk) {
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
       System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + isNull(keyvalue));
-      pk = pk.addObject(Tuple.fromBytes(keyvalue.getKey()).get(i));
+      // popFront is needed since first value in key is for something else
+      pk = pk.addObject(Tuple.fromBytes(keyvalue.getKey()).popFront().get(i));
     }
     return pk;
   }
@@ -120,7 +121,7 @@ public class Cursor {
   private List<FDBKVPair> keyvalueToFDBKVPair(List<KeyValue> keyvalueList) {
     List<FDBKVPair> FDBKVPairList = new ArrayList<>();
     for (KeyValue keyvalue : keyvalueList) {
-      Tuple keyTuple = Tuple.fromBytes(keyvalue.getKey());
+      Tuple keyTuple = Tuple.fromBytes(keyvalue.getKey()).popFront();
       Tuple valueTuple = Tuple.fromBytes(keyvalue.getValue());
       FDBKVPairList.add(new FDBKVPair(path, keyTuple, valueTuple));
     }
