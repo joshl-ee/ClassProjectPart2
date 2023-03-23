@@ -59,6 +59,7 @@ public class Cursor {
     startFromBeginning = true;
     // Create the iterator
     iterator = initialize(false);
+    System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the first primary key. Sets the cursor's pointer to the first attribute keyvalue of the next pk
     List<KeyValue> keyvalueList = new ArrayList<>();
     Tuple pk = new Tuple();
@@ -81,6 +82,7 @@ public class Cursor {
     startFromBeginning = false;
     // Create the iterator
     iterator = initialize(true);
+    System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the last primary key
     List<KeyValue> keyvalueList = new ArrayList<>();
     Tuple pk = new Tuple();
