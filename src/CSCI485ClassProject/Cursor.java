@@ -30,6 +30,7 @@ public class Cursor {
   private final Transaction tx;
   private final Database db;
   private KeyValue curr;
+  private Tuple currPK;
   private AsyncIterator<KeyValue> iterator;
   private Boolean startFromBeginning = null;
   public Cursor(String tableName, Cursor.Mode mode, Database db, Transaction tx) {
@@ -63,20 +64,20 @@ public class Cursor {
     System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the first primary key. Sets the cursor's pointer to the first attribute keyvalue of the next pk
     List<KeyValue> keyvalueList = new ArrayList<>();
-    Tuple pk = new Tuple();
-    // Get PK of first record
     if (iterator.hasNext()) {
-      KeyValue first = iterator.next();
-//      System.out.println("Firstvalue: " + Tuple.fromBytes(first.getKey()).get(0));
-//      System.out.println("Secondvalue: " + Tuple.fromBytes(first.getKey()).get(1));
-//      System.out.println("Thurdvalue: " + Tuple.fromBytes(first.getKey()).get(2));
-
-      pk = getPKFromKeyValue(first, pk);
-      keyvalueList.add(first);
-    }
-    while (curr != null && getPKFromKeyValue(curr, pk).equals(pk)) {
-      keyvalueList.add(curr);
       curr = iterator.next();
+      currPK = getPKFromKeyValue(curr);
+      keyvalueList.add(curr);
+    }
+    // Get rest of attributes of first PK
+    boolean newPk = false;
+    while (iterator.hasNext() && !newPk) {
+      curr = iterator.next();
+      if (getPKFromKeyValue(curr).equals(currPK)) {
+        System.out.println("While loop entered");
+        keyvalueList.add(curr);
+      }
+      else newPk = true;
     }
     return keyvalueToFDBKVPair(keyvalueList);
   }
@@ -90,23 +91,27 @@ public class Cursor {
     System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the last primary key
     List<KeyValue> keyvalueList = new ArrayList<>();
-    Tuple pk = new Tuple();
     // Get PK of first record
     if (iterator.hasNext()) {
-      KeyValue first = iterator.next();
-      pk = getPKFromKeyValue(first, pk);
-      Object pkValue = pk.get(0);
-      keyvalueList.add(first);
-    }
-    while (curr != null && getPKFromKeyValue(curr, new Tuple()).equals(pk)) {
-      System.out.println("While loop entered");
-      keyvalueList.add(curr);
       curr = iterator.next();
+      currPK = getPKFromKeyValue(curr);
+      keyvalueList.add(curr);
+    }
+    // Get rest of attributes of first PK
+    boolean newPk = false;
+    while (iterator.hasNext() && !newPk) {
+      curr = iterator.next();
+      if (getPKFromKeyValue(curr).equals(currPK)) {
+        System.out.println("While loop entered");
+        keyvalueList.add(curr);
+      }
+      else newPk = true;
     }
     return keyvalueToFDBKVPair(keyvalueList);
   }
 
-  public Tuple getPKFromKeyValue(KeyValue keyvalue, Tuple pk) {
+  public Tuple getPKFromKeyValue(KeyValue keyvalue) {
+    Tuple pk = new Tuple();
     System.out.println("Size of primary keys: " + metadata.getPrimaryKeys().size());
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
       System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + isNull(keyvalue));
