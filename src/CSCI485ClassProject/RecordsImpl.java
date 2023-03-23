@@ -63,8 +63,8 @@ public class RecordsImpl implements Records{
       if (newAttributes.get(newAttribute) instanceof Double) tableManager.addAttribute(tableName, newAttribute, AttributeType.DOUBLE);
       if (newAttributes.get(newAttribute) instanceof String) tableManager.addAttribute(tableName, newAttribute, AttributeType.VARCHAR);
     }
-    tableManager.closeDatabase();
     HashMap<String, AttributeType> tableAttributesNew = tableManager.listTables().get(tableName).getAttributes();
+    tableManager.closeDatabase();
 
     // Check if given PKs are correct type
     for (int i = 0; i < primaryKeys.length; i++) {
