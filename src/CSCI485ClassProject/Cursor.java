@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static CSCI485ClassProject.FDBHelper.getAllKeyValuePairsOfSubdirectory;
+import static java.util.Objects.isNull;
 
 public class Cursor {
   public enum Mode {
@@ -102,6 +103,7 @@ public class Cursor {
 
   public Tuple getPKFromKeyValue(KeyValue keyvalue, Tuple pk) {
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
+      System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + Tuple.fromBytes(keyvalue.getKey()).get(0));
       pk = pk.addObject(Tuple.fromBytes(keyvalue.getKey()).get(i));
     }
     return pk;
