@@ -214,43 +214,43 @@ public class Part2Test {
     System.out.println("Test3 passed!");
   }
 
-//  /**
-//   * Points: 15
-//   */
-//  @Test
-//  public void unitTest4() {
-//    // use cursor to select the record with given name, and verify the correctness
-//    Cursor cursor = records.openCursor(EmployeeTableName, Salary, 100, ComparisonOperator.GREATER_THAN_OR_EQUAL_TO, Cursor.Mode.READ, false);
-//
-//    boolean isCursorInitialized = false;
-//    for (int i = initialNumberOfRecords; i<initialNumberOfRecords + updatedNumberOfRecords; i++) {
-//      long ssn = i;
-//      String name = getName(i);
-//      String email = getEmail(i);
-//      long age = getAge(i);
-//      String address = getAddress(i);
-//      long salary = getSalary(i);
-//
-//      Record record;
-//      if (!isCursorInitialized) {
-//        record = records.getFirst(cursor);
-//        isCursorInitialized = true;
-//      } else {
-//        record = records.getNext(cursor);
-//      }
-//      assertNotNull(record);
-//      assertEquals(ssn, record.getValueForGivenAttrName(SSN));
-//      assertEquals(salary, record.getValueForGivenAttrName(Salary));
-//      assertEquals(name, record.getValueForGivenAttrName(Name));
-//      assertEquals(email, record.getValueForGivenAttrName(Email));
-//      assertEquals(age, record.getValueForGivenAttrName(Age));
-//      assertEquals(address, record.getValueForGivenAttrName(Address));
-//    }
-//    assertNull(records.getNext(cursor));
-//    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    System.out.println("Test4 passed!");
-//  }
-//
+  /**
+   * Points: 15
+   */
+  @Test
+  public void unitTest4() {
+    // use cursor to select the record with given name, and verify the correctness
+    Cursor cursor = records.openCursor(EmployeeTableName, Salary, 100, ComparisonOperator.GREATER_THAN_OR_EQUAL_TO, Cursor.Mode.READ, false);
+
+    boolean isCursorInitialized = false;
+    for (int i = initialNumberOfRecords; i<initialNumberOfRecords + updatedNumberOfRecords; i++) {
+      long ssn = i;
+      String name = getName(i);
+      String email = getEmail(i);
+      long age = getAge(i);
+      String address = getAddress(i);
+      long salary = getSalary(i);
+
+      Record record;
+      if (!isCursorInitialized) {
+        record = records.getFirst(cursor);
+        isCursorInitialized = true;
+      } else {
+        record = records.getNext(cursor);
+      }
+      assertNotNull(record);
+      assertEquals(ssn, record.getValueForGivenAttrName(SSN));
+      assertEquals(salary, record.getValueForGivenAttrName(Salary));
+      assertEquals(name, record.getValueForGivenAttrName(Name));
+      assertEquals(email, record.getValueForGivenAttrName(Email));
+      assertEquals(age, record.getValueForGivenAttrName(Age));
+      assertEquals(address, record.getValueForGivenAttrName(Address));
+    }
+    assertNull(records.getNext(cursor));
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    System.out.println("Test4 passed!");
+  }
+
 //  /**
 //   * Points: 15
 //   */
