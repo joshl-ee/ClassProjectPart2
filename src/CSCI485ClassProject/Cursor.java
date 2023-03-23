@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static CSCI485ClassProject.FDBHelper.getAllKeyValuePairsOfSubdirectory;
+import static CSCI485ClassProject.FDBHelper.tryCommitTx;
 import static java.util.Objects.isNull;
 
 public class Cursor {
@@ -143,6 +144,10 @@ public class Cursor {
 
   public String getTableName() {
     return tableName;
+  }
+
+  public boolean commit() {
+    return tryCommitTx(tx, 20);
   }
 }
 

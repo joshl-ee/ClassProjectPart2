@@ -183,7 +183,9 @@ public class RecordsImpl implements Records{
 
   @Override
   public StatusCode commitCursor(Cursor cursor) {
-    return null;
+    boolean committed = cursor.commit();
+    if (committed) return StatusCode.SUCCESS;
+    else return StatusCode.CURSOR_INVALID;
   }
 
   @Override
