@@ -100,7 +100,7 @@ public class RecordsImpl implements Records{
 
       // Create valueTuple
       Tuple valueTuple = new Tuple();
-      valueTuple.addObject(attrValues[i]);
+      valueTuple = valueTuple.addObject(attrValues[i]);
 
       // Add to FDB
       FDBHelper.setFDBKVPair(dir, tx, new FDBKVPair(recordPath, keyTuple, valueTuple));
