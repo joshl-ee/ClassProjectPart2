@@ -80,102 +80,102 @@ public class Part2Test {
   /**
    * Points: 10
 //   */
-//  @Test
-//  public void unitTest1() {
-//    tableManager.dropAllTables();
-//
-//    // create the Employee Table, verify that the table is created
-//    TableMetadata EmployeeTable = new TableMetadata(EmployeeTableAttributeNames, EmployeeTableAttributeTypes,
-//        EmployeeTablePKAttributes);
-//    assertEquals(StatusCode.SUCCESS, tableManager.createTable(EmployeeTableName,
-//        EmployeeTableAttributeNames, EmployeeTableAttributeTypes, EmployeeTablePKAttributes));
-//    HashMap<String, TableMetadata> tables = tableManager.listTables();
-//    assertEquals(1, tables.size());
-//    assertEquals(EmployeeTable, tables.get(EmployeeTableName));
-//
-//    for (int i = 0; i<initialNumberOfRecords; i++) {
-//      long ssn = i;
-//      String name = getName(i);
-//      String email = getEmail(i);
-//      long age = getAge(i);
-//      String address = getAddress(i);
-//      Object[] primaryKeyVal = new Object[] {ssn};
-//      Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address};
-//
-//      assertEquals(StatusCode.SUCCESS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, EmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
-//    }
-//
-//    assertEquals(StatusCode.DATA_RECORD_PRIMARY_KEYS_UNMATCHED, records.insertRecord(EmployeeTableName, new String[]{}, new String[]{}, new String[]{"Name"}, new Object[]{"Bob"}));
-//    assertEquals(StatusCode.DATA_RECORD_CREATION_ATTRIBUTE_TYPE_UNMATCHED, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, new Object[]{initialNumberOfRecords+1}, new String[]{"Name"}, new Object[]{12345}));
-//
-//    System.out.println("Test1 passed!");
-//  }
-//
-//  /**
-//   * Points: 15
-//   */
-//  @Test
-//  public void unitTest2() {
-//    Cursor cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ);
-//    assertNotNull(cursor);
-//
-//    // initialize the first record
-//    Record rec = records.getFirst(cursor);
-//    // verify the first record
-//    assertNotNull(rec);
-//    long ssn = 0;
-//    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//    ssn++;
-//
-//    while (true) {
-//      rec = records.getNext(cursor);
-//      if (rec == null) {
-//        break;
-//      }
-//      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//      ssn++;
-//    }
-//
-//    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    assertEquals(ssn, initialNumberOfRecords);
-//
-//    // use getLast to verify again
-//    cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ);
-//    assertNotNull(cursor);
-//    rec = records.getLast(cursor);
-//    ssn--;
-//    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//    ssn--;
-//
-//    while (true) {
-//      rec = records.getPrevious(cursor);
-//      if (rec == null) {
-//        break;
-//      }
-//      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//      ssn--;
-//    }
-//
-//    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    assertEquals(-1, ssn);
-//    System.out.println("Test2 passed!");
-//  }
+  @Test
+  public void unitTest1() {
+    tableManager.dropAllTables();
+
+    // create the Employee Table, verify that the table is created
+    TableMetadata EmployeeTable = new TableMetadata(EmployeeTableAttributeNames, EmployeeTableAttributeTypes,
+        EmployeeTablePKAttributes);
+    assertEquals(StatusCode.SUCCESS, tableManager.createTable(EmployeeTableName,
+        EmployeeTableAttributeNames, EmployeeTableAttributeTypes, EmployeeTablePKAttributes));
+    HashMap<String, TableMetadata> tables = tableManager.listTables();
+    assertEquals(1, tables.size());
+    assertEquals(EmployeeTable, tables.get(EmployeeTableName));
+
+    for (int i = 0; i<initialNumberOfRecords; i++) {
+      long ssn = i;
+      String name = getName(i);
+      String email = getEmail(i);
+      long age = getAge(i);
+      String address = getAddress(i);
+      Object[] primaryKeyVal = new Object[] {ssn};
+      Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address};
+
+      assertEquals(StatusCode.SUCCESS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, EmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
+    }
+
+    assertEquals(StatusCode.DATA_RECORD_PRIMARY_KEYS_UNMATCHED, records.insertRecord(EmployeeTableName, new String[]{}, new String[]{}, new String[]{"Name"}, new Object[]{"Bob"}));
+    assertEquals(StatusCode.DATA_RECORD_CREATION_ATTRIBUTE_TYPE_UNMATCHED, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, new Object[]{initialNumberOfRecords+1}, new String[]{"Name"}, new Object[]{12345}));
+
+    System.out.println("Test1 passed!");
+  }
+
+  /**
+   * Points: 15
+   */
+  @Test
+  public void unitTest2() {
+    Cursor cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ);
+    assertNotNull(cursor);
+
+    // initialize the first record
+    Record rec = records.getFirst(cursor);
+    // verify the first record
+    assertNotNull(rec);
+    long ssn = 0;
+    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+    ssn++;
+
+    while (true) {
+      rec = records.getNext(cursor);
+      if (rec == null) {
+        break;
+      }
+      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+      ssn++;
+    }
+
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    assertEquals(ssn, initialNumberOfRecords);
+
+    // use getLast to verify again
+    cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ);
+    assertNotNull(cursor);
+    rec = records.getLast(cursor);
+    ssn--;
+    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+    ssn--;
+
+    while (true) {
+      rec = records.getPrevious(cursor);
+      if (rec == null) {
+        break;
+      }
+      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+      ssn--;
+    }
+
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    assertEquals(-1, ssn);
+    System.out.println("Test2 passed!");
+  }
 
   /**
    * Points: 15
@@ -251,41 +251,41 @@ public class Part2Test {
     System.out.println("Test4 passed!");
   }
 
-//  /**
-//   * Points: 15
-//   */
-//  @Test
-//  public void unitTest5() {
-//    // use cursor to select the record with given name, and verify the correctness
-//
-//    Cursor cursor;
-//    for (int i = 0; i < initialNumberOfRecords + updatedNumberOfRecords; i++) {
-//      long ssn = i;
-//      String name = getName(i);
-//      String email = getEmail(i);
-//      long age = getAge(i);
-//      String address = getAddress(i);
-//      long salary = getSalary(i);
-//
-//      cursor = records.openCursor(EmployeeTableName, Name, name, ComparisonOperator.EQUAL_TO, Cursor.Mode.READ, false);
-//
-//      Record record = records.getFirst(cursor);
-//      assertNotNull(record);
-//      assertEquals(ssn, record.getValueForGivenAttrName(SSN));
-//      assertEquals(name, record.getValueForGivenAttrName(Name));
-//      assertEquals(email, record.getValueForGivenAttrName(Email));
-//      assertEquals(age, record.getValueForGivenAttrName(Age));
-//      assertEquals(address, record.getValueForGivenAttrName(Address));
-//
-//      // those records with salary
-//      if (i >= initialNumberOfRecords) {
-//        assertEquals(salary, record.getValueForGivenAttrName(Salary));
-//      }
-//      assertNull(records.getNext(cursor));
-//      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    }
-//    System.out.println("Test5 passed!");
-//  }
+  /**
+   * Points: 15
+   */
+  @Test
+  public void unitTest5() {
+    // use cursor to select the record with given name, and verify the correctness
+
+    Cursor cursor;
+    for (int i = 0; i < initialNumberOfRecords + updatedNumberOfRecords; i++) {
+      long ssn = i;
+      String name = getName(i);
+      String email = getEmail(i);
+      long age = getAge(i);
+      String address = getAddress(i);
+      long salary = getSalary(i);
+
+      cursor = records.openCursor(EmployeeTableName, Name, name, ComparisonOperator.EQUAL_TO, Cursor.Mode.READ, false);
+
+      Record record = records.getFirst(cursor);
+      assertNotNull(record);
+      assertEquals(ssn, record.getValueForGivenAttrName(SSN));
+      assertEquals(name, record.getValueForGivenAttrName(Name));
+      assertEquals(email, record.getValueForGivenAttrName(Email));
+      assertEquals(age, record.getValueForGivenAttrName(Age));
+      assertEquals(address, record.getValueForGivenAttrName(Address));
+
+      // those records with salary
+      if (i >= initialNumberOfRecords) {
+        assertEquals(salary, record.getValueForGivenAttrName(Salary));
+      }
+      assertNull(records.getNext(cursor));
+      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    }
+    System.out.println("Test5 passed!");
+  }
 //
 //  /**
 //   * Points: 15

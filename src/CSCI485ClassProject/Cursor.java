@@ -62,7 +62,7 @@ public class Cursor {
     startFromBeginning = true;
     // Create the iterator
     iterator = initialize(false);
-    System.out.println("Has first value: " + iterator.hasNext());
+    //System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the first primary key. Sets the cursor's pointer to the first attribute keyvalue of the next pk
     List<KeyValue> keyvalueList = new ArrayList<>();
     if (iterator.hasNext()) {
@@ -78,7 +78,7 @@ public class Cursor {
     startFromBeginning = false;
     // Create the iterator
     iterator = initialize(true);
-    System.out.println("Has first value: " + iterator.hasNext());
+    //System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the last primary key
     List<KeyValue> keyvalueList = new ArrayList<>();
     if (iterator.hasNext()) {
@@ -116,7 +116,7 @@ public class Cursor {
     while (iterator.hasNext() && !newPk) {
       curr = iterator.next();
       if (getPKFromKeyValue(curr).equals(currPK)) {
-        System.out.println("While loop entered");
+        //System.out.println("While loop entered");
         keyvalueList.add(curr);
       }
       else newPk = true;
@@ -126,9 +126,9 @@ public class Cursor {
 
   private Tuple getPKFromKeyValue(KeyValue keyvalue) {
     Tuple pk = new Tuple();
-    System.out.println("Size of primary keys: " + metadata.getPrimaryKeys().size());
+    //System.out.println("Size of primary keys: " + metadata.getPrimaryKeys().size());
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
-      System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + isNull(keyvalue));
+      //System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + isNull(keyvalue));
       // popFront is needed since first value in key is for something else
       pk = pk.addObject(Tuple.fromBytes(keyvalue.getKey()).popFront().get(i));
     }

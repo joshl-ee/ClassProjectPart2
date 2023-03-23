@@ -57,7 +57,7 @@ public class RecordsImpl implements Records{
     }
 
     for (String newAttribute : newAttributes.keySet()) {
-      System.out.println("GERERERE " + newAttributes.get(newAttribute));
+      //System.out.println("GERERERE " + newAttributes.get(newAttribute));
       if (newAttributes.get(newAttribute) instanceof Integer) tableManager.addAttribute(tableName, newAttribute, AttributeType.INT);
       if (newAttributes.get(newAttribute) instanceof Long) tableManager.addAttribute(tableName, newAttribute, AttributeType.INT);
       if (newAttributes.get(newAttribute) instanceof Double) tableManager.addAttribute(tableName, newAttribute, AttributeType.DOUBLE);
