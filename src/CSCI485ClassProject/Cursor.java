@@ -66,6 +66,7 @@ public class Cursor {
     // Get PK of first record
     if (iterator.hasNext()) {
       KeyValue first = iterator.next();
+      System.out.println("Firstvalue: " + Tuple.fromBytes(first.getKey()).get(0));
       pk = getPKFromKeyValue(first, pk);
       keyvalueList.add(first);
     }
