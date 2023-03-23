@@ -9,10 +9,8 @@ import com.apple.foundationdb.Transaction;
 import com.apple.foundationdb.directory.DirectorySubspace;
 import com.apple.foundationdb.tuple.Tuple;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.sql.Array;
+import java.util.*;
 
 public class RecordsImpl implements Records{
 
@@ -48,6 +46,22 @@ public class RecordsImpl implements Records{
 
     TableManagerImpl tableManager = new TableManagerImpl();
     HashMap<String, AttributeType> tableAttributes = tableManager.listTables().get(tableName).getAttributes();
+    HashMap<String, Object> newAttributes = new HashMap<>();
+    for (int i = 0; i < attrNames.length; i++){
+      newAttributes.put(attrNames[i], attrValues[i]);
+    }
+    for (String attribute : attrNames) {
+      if (tableAttributes.containsKey(attribute)) {
+        newAttributes.remove(attribute);
+      }
+    }
+
+    for (String newAttribute : newAttributes.keySet()) {
+      if (newAttributes.get(newAttribute) instanceof Integer) tableManager.addAttribute(tableName, newAttribute, AttributeType.INT);
+      if (newAttributes.get(newAttribute) instanceof Long) tableManager.addAttribute(tableName, newAttribute, AttributeType.INT);
+      if (newAttributes.get(newAttribute) instanceof Double) tableManager.addAttribute(tableName, newAttribute, AttributeType.DOUBLE);
+      if (newAttributes.get(newAttribute) instanceof String) tableManager.addAttribute(tableName, newAttribute, AttributeType.VARCHAR);
+    }
     tableManager.closeDatabase();
 
     // Check if given PKs are correct type
