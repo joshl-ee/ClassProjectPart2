@@ -81,9 +81,9 @@ public class RecordsImpl implements Records{
     // Check if given attributes are correct type
     for (int i = 0; i < attrNames.length; i++) {
       Object attribute = attrValues[i];
-      if (!(attribute instanceof String && tableAttributes.get(attrNames[i]) == AttributeType.VARCHAR) &&
-              !((attribute instanceof Integer || attribute instanceof Long) && tableAttributes.get(attrNames[i]) == AttributeType.INT) &&
-              !(attribute instanceof Double && tableAttributes.get(attrNames[i]) == AttributeType.DOUBLE)) {
+      if (!(attribute instanceof String && tableAttributesNew.get(attrNames[i]) == AttributeType.VARCHAR) &&
+              !((attribute instanceof Integer || attribute instanceof Long) && tableAttributesNew.get(attrNames[i]) == AttributeType.INT) &&
+              !(attribute instanceof Double && tableAttributesNew.get(attrNames[i]) == AttributeType.DOUBLE)) {
         FDBHelper.abortTransaction(tx);
         FDBHelper.closeTransaction(tx);
         return StatusCode.DATA_RECORD_CREATION_ATTRIBUTE_TYPE_UNMATCHED;
