@@ -103,7 +103,7 @@ public class Cursor {
 
   public Tuple getPKFromKeyValue(KeyValue keyvalue, Tuple pk) {
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
-      System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + Tuple.fromBytes(keyvalue.getKey()).get(0));
+      System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + isNull(keyvalue));
       pk = pk.addObject(Tuple.fromBytes(keyvalue.getKey()).get(i));
     }
     return pk;
