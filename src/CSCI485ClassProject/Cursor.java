@@ -88,16 +88,13 @@ public class Cursor {
     return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
   }
 
-  public List<FDBKVPair> getNext() {
+  public List<FDBKVPair> getNextOrPrev() {
     if (!startFromBeginning) return null;
-    List<KeyValue> keyvalueList = new ArrayList<>();
-    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
-  }
-
-  public List<FDBKVPair> getPrevious() {
-    if (startFromBeginning) return null;
-    List<KeyValue> keyvalueList = new ArrayList<>();
-    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    if (iterator.hasNext()) {
+      List<KeyValue> keyvalueList = new ArrayList<>();
+      return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    }
+    else return null;
   }
 
   private List<KeyValue> getNextSetOfFDBKVPairs( List<KeyValue> keyvalueList) {

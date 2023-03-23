@@ -163,7 +163,7 @@ public class RecordsImpl implements Records{
   }
   @Override
   public Record getNext(Cursor cursor) {
-    List<FDBKVPair> KVPair = cursor.getNext();
+    List<FDBKVPair> KVPair = cursor.getNextOrPrev();
     if (KVPair == null) {
       return null;
     }
@@ -173,7 +173,7 @@ public class RecordsImpl implements Records{
 
   @Override
   public Record getPrevious(Cursor cursor) {
-    List<FDBKVPair> KVPair = cursor.getPrevious();
+    List<FDBKVPair> KVPair = cursor.getNextOrPrev();
     if (KVPair == null) {
       return null;
     }
