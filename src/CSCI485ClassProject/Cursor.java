@@ -98,6 +98,7 @@ public class Cursor {
       keyvalueList.add(first);
     }
     while (curr != null && getPKFromKeyValue(curr, pk.add(false)).equals(pk)) {
+      System.out.println("While loop entered");
       keyvalueList.add(curr);
       curr = iterator.next();
     }
