@@ -61,14 +61,14 @@ public class Cursor {
     iterator = initialize(false);
     // Find all attributes of the first primary key. Sets the cursor's pointer to the first attribute keyvalue of the next pk
     List<KeyValue> keyvalueList = new ArrayList<>();
-    Tuple pk = null;
+    Tuple pk = new Tuple();
     // Get PK of first record
     if (iterator.hasNext()) {
       KeyValue first = iterator.next();
-      pk = getPKFromKeyValue(first);
+      pk = getPKFromKeyValue(first, pk);
       keyvalueList.add(first);
     }
-    while (getPKFromKeyValue(curr).equals(pk)) {
+    while (getPKFromKeyValue(curr, pk).equals(pk)) {
       keyvalueList.add(curr);
       curr = iterator.next();
     }
@@ -83,22 +83,21 @@ public class Cursor {
     iterator = initialize(true);
     // Find all attributes of the last primary key
     List<KeyValue> keyvalueList = new ArrayList<>();
-    Tuple pk = null;
+    Tuple pk = new Tuple();
     // Get PK of first record
     if (iterator.hasNext()) {
       KeyValue first = iterator.next();
-      pk = getPKFromKeyValue(first);
+      pk = getPKFromKeyValue(first, pk);
       keyvalueList.add(first);
     }
-    while (getPKFromKeyValue(curr).equals(pk)) {
+    while (getPKFromKeyValue(curr, pk).equals(pk)) {
       keyvalueList.add(curr);
       curr = iterator.next();
     }
     return keyvalueToFDBKVPair(keyvalueList);
   }
 
-  public Tuple getPKFromKeyValue(KeyValue keyvalue) {
-    Tuple pk = new Tuple();
+  public Tuple getPKFromKeyValue(KeyValue keyvalue, Tuple pk) {
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
       pk = pk.addObject(Tuple.fromBytes(keyvalue.getKey()).get(i));
     }
