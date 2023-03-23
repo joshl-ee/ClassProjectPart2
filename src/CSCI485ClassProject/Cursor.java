@@ -64,23 +64,7 @@ public class Cursor {
     iterator = initialize(false);
     System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the first primary key. Sets the cursor's pointer to the first attribute keyvalue of the next pk
-    List<KeyValue> keyvalueList = new ArrayList<>();
-    if (iterator.hasNext()) {
-      curr = iterator.next();
-      currPK = getPKFromKeyValue(curr);
-      keyvalueList.add(curr);
-    }
-    // Get rest of attributes of first PK
-    boolean newPk = false;
-    while (iterator.hasNext() && !newPk) {
-      curr = iterator.next();
-      if (getPKFromKeyValue(curr).equals(currPK)) {
-        System.out.println("While loop entered");
-        keyvalueList.add(curr);
-      }
-      else newPk = true;
-    }
-    return keyvalueToFDBKVPair(keyvalueList);
+    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs());
   }
 
   public List<FDBKVPair> getLast() {
@@ -91,6 +75,20 @@ public class Cursor {
     iterator = initialize(true);
     System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the last primary key
+    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs());
+  }
+
+  public List<FDBKVPair> getNext() {
+    if (!startFromBeginning) return null;
+    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs());
+  }
+
+  public List<FDBKVPair> getPrevious() {
+    if (startFromBeginning) return null;
+    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs());
+  }
+
+  private List<KeyValue> getNextSetOfFDBKVPairs() {
     List<KeyValue> keyvalueList = new ArrayList<>();
     // Get PK of first record
     if (iterator.hasNext()) {
@@ -108,10 +106,10 @@ public class Cursor {
       }
       else newPk = true;
     }
-    return keyvalueToFDBKVPair(keyvalueList);
+    return keyvalueList;
   }
 
-  public Tuple getPKFromKeyValue(KeyValue keyvalue) {
+  private Tuple getPKFromKeyValue(KeyValue keyvalue) {
     Tuple pk = new Tuple();
     System.out.println("Size of primary keys: " + metadata.getPrimaryKeys().size());
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {

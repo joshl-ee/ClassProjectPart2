@@ -163,12 +163,22 @@ public class RecordsImpl implements Records{
   }
   @Override
   public Record getNext(Cursor cursor) {
-    return null;
+    List<FDBKVPair> KVPair = cursor.getNext();
+    if (KVPair == null) {
+      return null;
+    }
+
+    return KVPairListToRecord(KVPair, cursor.getTableName());
   }
 
   @Override
   public Record getPrevious(Cursor cursor) {
-    return null;
+    List<FDBKVPair> KVPair = cursor.getPrevious();
+    if (KVPair == null) {
+      return null;
+    }
+
+    return KVPairListToRecord(KVPair, cursor.getTableName());
   }
 
   @Override
