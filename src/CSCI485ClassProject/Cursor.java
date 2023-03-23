@@ -2,10 +2,14 @@ package CSCI485ClassProject;
 
 import CSCI485ClassProject.models.ComparisonOperator;
 import CSCI485ClassProject.models.TableMetadata;
-import com.apple.foundationdb.Database;
-import com.apple.foundationdb.Transaction;
+import com.apple.foundationdb.*;
+import com.apple.foundationdb.async.AsyncIterable;
+import com.apple.foundationdb.async.AsyncIterator;
 import com.apple.foundationdb.directory.DirectorySubspace;
+import com.apple.foundationdb.tuple.Tuple;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import static CSCI485ClassProject.FDBHelper.getAllKeyValuePairsOfSubdirectory;
@@ -23,11 +27,9 @@ public class Cursor {
   private final TableMetadata metadata;
   private final List<String> path;
   private final Transaction tx;
-  private byte[] st;
-  private byte[] end;
-  private FDBKVPair currKey;
   private final Database db;
-
+  private KeyValue curr;
+  private AsyncIterator<KeyValue> iterator;
   private Boolean startFromBeginning = null;
   public Cursor(String tableName, Cursor.Mode mode, Database db, Transaction tx) {
     this.mode = mode;
@@ -51,32 +53,88 @@ public class Cursor {
     this.db = db;
   }
 
-  public FDBKVPair getFirst() {
+  public List<FDBKVPair> getFirst() {
+    // Check if initialization happened already
     if (startFromBeginning != null) return null;
     startFromBeginning = true;
-    List<FDBKVPair> KVPairs = FDBHelper.getAllKeyValuePairsOfSubdirectory(db, tx, path);
-    if (KVPairs.isEmpty()) return null;
-    return KVPairs.get(0);
+    // Create the iterator
+    iterator = initialize(false);
+    // Find all attributes of the first primary key. Sets the cursor's pointer to the first attribute keyvalue of the next pk
+    List<KeyValue> keyvalueList = new ArrayList<>();
+    Tuple pk = null;
+    // Get PK of first record
+    if (iterator.hasNext()) {
+      KeyValue first = iterator.next();
+      pk = getPKFromKeyValue(first);
+      keyvalueList.add(first);
+    }
+    while (getPKFromKeyValue(curr).equals(pk)) {
+      keyvalueList.add(curr);
+      curr = iterator.next();
+    }
+    return keyvalueToFDBKVPair(keyvalueList);
   }
 
-  public FDBKVPair getLast() {
+  public List<FDBKVPair> getLast() {
+    // Check if initialization happened already
     if (startFromBeginning != null) return null;
     startFromBeginning = false;
-    List<FDBKVPair> KVPairs = FDBHelper.getAllKeyValuePairsOfSubdirectory(db, tx, path);
-    if (KVPairs.isEmpty()) return null;
-    return KVPairs.get(KVPairs.size()-1);
+    // Create the iterator
+    iterator = initialize(true);
+    // Find all attributes of the last primary key
+    List<KeyValue> keyvalueList = new ArrayList<>();
+    Tuple pk = null;
+    // Get PK of first record
+    if (iterator.hasNext()) {
+      KeyValue first = iterator.next();
+      pk = getPKFromKeyValue(first);
+      keyvalueList.add(first);
+    }
+    while (getPKFromKeyValue(curr).equals(pk)) {
+      keyvalueList.add(curr);
+      curr = iterator.next();
+    }
+    return keyvalueToFDBKVPair(keyvalueList);
+  }
+
+  public Tuple getPKFromKeyValue(KeyValue keyvalue) {
+    Tuple pk = new Tuple();
+    for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
+      pk = pk.addObject(Tuple.fromBytes(keyvalue.getKey()).get(i));
+    }
+    return pk;
+  }
+  private AsyncIterator<KeyValue> initialize(boolean reverse) {
+    Range range = subspace.range();
+    AsyncIterable<KeyValue> iterable = tx.getRange(range, ReadTransaction.ROW_LIMIT_UNLIMITED, reverse);
+    return iterable.iterator();
+  }
+
+  private List<FDBKVPair> keyvalueToFDBKVPair(List<KeyValue> keyvalueList) {
+    List<FDBKVPair> FDBKVPairList = new ArrayList<>();
+    for (KeyValue keyvalue : keyvalueList) {
+      Tuple keyTuple = Tuple.fromBytes(keyvalue.getKey());
+      Tuple valueTuple = Tuple.fromBytes(keyvalue.getValue());
+      FDBKVPairList.add(new FDBKVPair(path, keyTuple, valueTuple));
+    }
+    if (FDBKVPairList.size() == 0) return null;
+    return FDBKVPairList;
   }
 
   public TableMetadata getMetadata() {
     return metadata;
+  }
+
+  public String getTableName() {
+    return tableName;
   }
 }
 
 // 685 Grams russet potatoes
 // 1 tablespoon butter
 // quarter cup milk
-//  salt (2-3 tsp)
-//  garlic powder (1.5 tsp)
+//  salt (2-3 tsp or to taste)
+//  garlic powder (1.5 tsp or to taste)
 //  MSG (~1 tsp)
 
 // 740 grams of potatoes 1 calorie per gram

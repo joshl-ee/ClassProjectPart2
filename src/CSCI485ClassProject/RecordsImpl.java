@@ -4,6 +4,7 @@ import CSCI485ClassProject.models.AttributeType;
 import CSCI485ClassProject.models.ComparisonOperator;
 import CSCI485ClassProject.models.Record;
 import com.apple.foundationdb.Database;
+import com.apple.foundationdb.KeyValue;
 import com.apple.foundationdb.Transaction;
 import com.apple.foundationdb.directory.DirectorySubspace;
 import com.apple.foundationdb.tuple.Tuple;
@@ -11,6 +12,7 @@ import com.apple.foundationdb.tuple.Tuple;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class RecordsImpl implements Records{
 
@@ -88,9 +90,9 @@ public class RecordsImpl implements Records{
 
       // Check if key already exists
       if (FDBHelper.getCertainKeyValuePairInSubdirectory(dir, tx, keyTuple, recordPath) != null) {
-        System.out.println(recordPath);
-        System.out.println(primaryKeysValues[0]);
-        System.out.println(keyTuple.get(0) + " " + keyTuple.get(1));
+//        System.out.println(recordPath);
+//        System.out.println(primaryKeysValues[0]);
+//        System.out.println(keyTuple.get(0) + " " + keyTuple.get(1));
         FDBHelper.abortTransaction(tx);
         FDBHelper.closeTransaction(tx);
         return StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS;
@@ -112,44 +114,51 @@ public class RecordsImpl implements Records{
   @Override
   public Cursor openCursor(String tableName, Cursor.Mode mode) {
     Transaction tx = FDBHelper.openTransaction(db);
-    Cursor cursor = new Cursor(tableName, mode, db, tx);
-
-
-
-    return cursor;
+    return new Cursor(tableName, mode, db, tx);
   }
 
 
   @Override
   public Cursor openCursor(String tableName, String attrName, Object attrValue, ComparisonOperator operator, Cursor.Mode mode, boolean isUsingIndex) {
     Transaction tx = FDBHelper.openTransaction(db);
-    Cursor cursor = new Cursor(tableName, attrName, attrValue, operator, mode, isUsingIndex, db, tx);
-    return cursor;
+    return new Cursor(tableName, attrName, attrValue, operator, mode, isUsingIndex, db, tx);
   }
 
   @Override
   public Record getFirst(Cursor cursor) {
-    FDBKVPair KVPair = cursor.getFirst();
+    List<FDBKVPair> KVPair = cursor.getFirst();
     if (KVPair == null) {
       return null;
     }
-    Record record = new Record();
-    Tuple values = KVPair.getValue();
-    // TODO: we cannot assume that attributes will be given in order
-//    int i = 0;
-//    for (String attribute : cursor.getMetadata().getAttributes().keySet()) {
-//      record.setAttrNameAndValue(attribute, values.getNestedList(i));
-//      i++;
-//    }
-    return record;
+
+    return KVPairListToRecord(KVPair, cursor.getTableName());
   }
 
   @Override
   public Record getLast(Cursor cursor) {
-    FDBKVPair KVPair = cursor.getLast();
-    return null;
+    List<FDBKVPair> KVPair = cursor.getLast();
+    if (KVPair == null) {
+      return null;
+    }
+    return KVPairListToRecord(KVPair, cursor.getTableName());
   }
 
+  public Record KVPairListToRecord(List<FDBKVPair> KVPair, String tableName) {
+    Record record = new Record();
+    // Set primary key
+    TableManagerImpl tableManager = new TableManagerImpl();
+    List<String> primaryKeys = tableManager.listTables().get(tableName).getPrimaryKeys();
+    tableManager.closeDatabase();
+    int i;
+    for (i = 0; i < primaryKeys.size(); i++) {
+      record.setAttrNameAndValue(primaryKeys.get(i), KVPair.get(i).getKey().getString(i));
+    }
+    // Set attributes
+    for (FDBKVPair kvpair: KVPair) {
+      record.setAttrNameAndValue(kvpair.getKey().getString(i+1), kvpair.getValue().get(0));
+    }
+    return record;
+  }
   @Override
   public Record getNext(Cursor cursor) {
     return null;
