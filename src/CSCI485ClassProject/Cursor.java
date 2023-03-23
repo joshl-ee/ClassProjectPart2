@@ -97,7 +97,7 @@ public class Cursor {
       pk = getPKFromKeyValue(first, pk);
       keyvalueList.add(first);
     }
-    while (curr != null && getPKFromKeyValue(curr, pk).equals(pk)) {
+    while (curr != null && getPKFromKeyValue(curr, pk.add(false)).equals(pk)) {
       keyvalueList.add(curr);
       curr = iterator.next();
     }
