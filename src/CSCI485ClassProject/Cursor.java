@@ -88,8 +88,17 @@ public class Cursor {
     return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
   }
 
-  public List<FDBKVPair> getNextOrPrev() {
+  public List<FDBKVPair> getNext() {
     if (!startFromBeginning) return null;
+    if (iterator.hasNext()) {
+      List<KeyValue> keyvalueList = new ArrayList<>();
+      return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    }
+    else return null;
+  }
+
+  public List<FDBKVPair> getPrevious() {
+    if (startFromBeginning) return null;
     if (iterator.hasNext()) {
       List<KeyValue> keyvalueList = new ArrayList<>();
       return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
@@ -151,7 +160,13 @@ public class Cursor {
   }
 
   public boolean commit() {
-    return tryCommitTx(tx, 20);
+    boolean success = tryCommitTx(tx, 20);
+    if (success) {
+      startFromBeginning = null;
+      iterator = null;
+      return true;
+    }
+    return false;
   }
 }
 

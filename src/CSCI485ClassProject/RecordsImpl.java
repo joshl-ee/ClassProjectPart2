@@ -155,7 +155,7 @@ public class RecordsImpl implements Records{
     }
     // Set attributes
     for (FDBKVPair kvpair: KVPair) {
-      System.out.println("0th: " + kvpair.getValue().get(0));
+      //System.out.println("0th: " + kvpair.getValue().get(0));
 
       record.setAttrNameAndValue(kvpair.getKey().getString(i), kvpair.getValue().get(0));
     }
@@ -163,7 +163,7 @@ public class RecordsImpl implements Records{
   }
   @Override
   public Record getNext(Cursor cursor) {
-    List<FDBKVPair> KVPair = cursor.getNextOrPrev();
+    List<FDBKVPair> KVPair = cursor.getNext();
     if (KVPair == null) {
       return null;
     }
@@ -173,7 +173,7 @@ public class RecordsImpl implements Records{
 
   @Override
   public Record getPrevious(Cursor cursor) {
-    List<FDBKVPair> KVPair = cursor.getNextOrPrev();
+    List<FDBKVPair> KVPair = cursor.getPrevious();
     if (KVPair == null) {
       return null;
     }
