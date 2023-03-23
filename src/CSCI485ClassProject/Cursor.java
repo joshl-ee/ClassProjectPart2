@@ -64,7 +64,12 @@ public class Cursor {
     iterator = initialize(false);
     System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the first primary key. Sets the cursor's pointer to the first attribute keyvalue of the next pk
-    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs());
+    List<KeyValue> keyvalueList = new ArrayList<>();
+    if (iterator.hasNext()) {
+      curr = iterator.next();
+    }
+    else return null;
+    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
   }
 
   public List<FDBKVPair> getLast() {
@@ -75,27 +80,31 @@ public class Cursor {
     iterator = initialize(true);
     System.out.println("Has first value: " + iterator.hasNext());
     // Find all attributes of the last primary key
-    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs());
+    List<KeyValue> keyvalueList = new ArrayList<>();
+    if (iterator.hasNext()) {
+      curr = iterator.next();
+    }
+    else return null;
+    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
   }
 
   public List<FDBKVPair> getNext() {
     if (!startFromBeginning) return null;
-    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs());
+    List<KeyValue> keyvalueList = new ArrayList<>();
+    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
   }
 
   public List<FDBKVPair> getPrevious() {
     if (startFromBeginning) return null;
-    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs());
+    List<KeyValue> keyvalueList = new ArrayList<>();
+    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
   }
 
-  private List<KeyValue> getNextSetOfFDBKVPairs() {
-    List<KeyValue> keyvalueList = new ArrayList<>();
+  private List<KeyValue> getNextSetOfFDBKVPairs( List<KeyValue> keyvalueList) {
     // Get PK of first record
-    if (iterator.hasNext()) {
-      curr = iterator.next();
-      currPK = getPKFromKeyValue(curr);
-      keyvalueList.add(curr);
-    }
+    currPK = getPKFromKeyValue(curr);
+    keyvalueList.add(curr);
+
     // Get rest of attributes of first PK
     boolean newPk = false;
     while (iterator.hasNext() && !newPk) {
