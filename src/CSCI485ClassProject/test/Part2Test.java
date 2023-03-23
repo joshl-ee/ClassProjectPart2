@@ -176,44 +176,44 @@ public class Part2Test {
     assertEquals(-1, ssn);
     System.out.println("Test2 passed!");
   }
-//
-//  /**
-//   * Points: 15
-//   */
-//  @Test
-//  public void unitTest3() {
-//    // insert records with new column "Salary"
-//    for (int i = initialNumberOfRecords; i<initialNumberOfRecords + updatedNumberOfRecords; i++) {
-//      long ssn = i;
-//      String name = getName(i);
-//      String email = getEmail(i);
-//      long age = getAge(i);
-//      String address = getAddress(i);
-//      long salary = getSalary(i);
-//
-//
-//      Object[] primaryKeyVal = new Object[] {ssn};
-//      Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address, salary};
-//
-//      assertEquals(StatusCode.SUCCESS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, UpdatedEmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
-//    }
-//
-//    // verify the schema changing
-//    TableMetadata expectedEmployeeTableSchema = new TableMetadata();
-//    expectedEmployeeTableSchema.addAttribute(SSN, AttributeType.INT);
-//    expectedEmployeeTableSchema.addAttribute(Name, AttributeType.VARCHAR);
-//    expectedEmployeeTableSchema.addAttribute(Email, AttributeType.VARCHAR);
-//    expectedEmployeeTableSchema.addAttribute(Address, AttributeType.VARCHAR);
-//    expectedEmployeeTableSchema.addAttribute(Age, AttributeType.INT);
-//    expectedEmployeeTableSchema.addAttribute(Salary, AttributeType.INT);
-//    expectedEmployeeTableSchema.setPrimaryKeys(Collections.singletonList("SSN"));
-//
-//    HashMap<String, TableMetadata> tables = tableManager.listTables();
-//    assertEquals(1, tables.size());
-//    assertEquals(expectedEmployeeTableSchema, tables.get(EmployeeTableName));
-//    System.out.println("Test3 passed!");
-//  }
-//
+
+  /**
+   * Points: 15
+   */
+  @Test
+  public void unitTest3() {
+    // insert records with new column "Salary"
+    for (int i = initialNumberOfRecords; i<initialNumberOfRecords + updatedNumberOfRecords; i++) {
+      long ssn = i;
+      String name = getName(i);
+      String email = getEmail(i);
+      long age = getAge(i);
+      String address = getAddress(i);
+      long salary = getSalary(i);
+
+
+      Object[] primaryKeyVal = new Object[] {ssn};
+      Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address, salary};
+
+      assertEquals(StatusCode.SUCCESS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, UpdatedEmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
+    }
+
+    // verify the schema changing
+    TableMetadata expectedEmployeeTableSchema = new TableMetadata();
+    expectedEmployeeTableSchema.addAttribute(SSN, AttributeType.INT);
+    expectedEmployeeTableSchema.addAttribute(Name, AttributeType.VARCHAR);
+    expectedEmployeeTableSchema.addAttribute(Email, AttributeType.VARCHAR);
+    expectedEmployeeTableSchema.addAttribute(Address, AttributeType.VARCHAR);
+    expectedEmployeeTableSchema.addAttribute(Age, AttributeType.INT);
+    expectedEmployeeTableSchema.addAttribute(Salary, AttributeType.INT);
+    expectedEmployeeTableSchema.setPrimaryKeys(Collections.singletonList("SSN"));
+
+    HashMap<String, TableMetadata> tables = tableManager.listTables();
+    assertEquals(1, tables.size());
+    assertEquals(expectedEmployeeTableSchema, tables.get(EmployeeTableName));
+    System.out.println("Test3 passed!");
+  }
+
 //  /**
 //   * Points: 15
 //   */
