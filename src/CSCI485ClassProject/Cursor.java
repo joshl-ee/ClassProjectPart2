@@ -68,6 +68,9 @@ public class Cursor {
     if (iterator.hasNext()) {
       KeyValue first = iterator.next();
       System.out.println("Firstvalue: " + Tuple.fromBytes(first.getKey()).get(0));
+      System.out.println("Secondvalue: " + Tuple.fromBytes(first.getKey()).get(1));
+      System.out.println("Thurdvalue: " + Tuple.fromBytes(first.getKey()).get(2));
+
       pk = getPKFromKeyValue(first, pk);
       keyvalueList.add(first);
     }
