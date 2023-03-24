@@ -174,6 +174,7 @@ public class Cursor {
         return (Integer) valueOf > (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
+        if (attrValue instanceof Integer)  return (Long) valueOf >= (Integer) attrValue;
         return (Long) valueOf > (Long) attrValue;
       }
       if (valueOf instanceof Double) {
@@ -188,6 +189,7 @@ public class Cursor {
         return (Integer) valueOf < (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
+        if (attrValue instanceof Integer)  return (Long) valueOf >= (Integer) attrValue;
         return (Long) valueOf < (Long) attrValue;
       }
       if (valueOf instanceof Double) {
@@ -202,6 +204,7 @@ public class Cursor {
         return (Integer) valueOf <= (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
+        if (attrValue instanceof Integer)  return (Long) valueOf >= (Integer) attrValue;
         return (Long) valueOf <= (Long) attrValue;
       }
       if (valueOf instanceof Double) {
