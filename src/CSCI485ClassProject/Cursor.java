@@ -121,6 +121,7 @@ public class Cursor {
 
   private List<KeyValue> getNextSetOfFDBKVPairs( List<KeyValue> keyvalueList) {
     // Get PK of first record
+    if (curr == null) return new ArrayList<>();
     currPK = getPKFromKeyValue(curr);
     keyvalueList.add(curr);
 
@@ -154,7 +155,7 @@ public class Cursor {
       // Find the correct kv for attribute
       comparedAttribute = Tuple.fromBytes(keyvalue.getKey()).getString(metadata.getPrimaryKeys().size()+1);
       if (comparedAttribute.equals(attrName)) {
-        System.out.println("Attribute found: " + comparedAttribute + " matched to " + attrName);
+        //System.out.println("Attribute found: " + comparedAttribute + " matched to " + attrName);
         attrKV = keyvalue;
         break;
       }
