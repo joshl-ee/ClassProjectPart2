@@ -125,8 +125,8 @@ public class Cursor {
   }
 
   public StatusCode delete() {
+    System.out.println("attrname: " + currRecord.get(0).getKey().get(metadata.getPrimaryKeys().size()-1));
     for (FDBKVPair kvpair : currRecord) {
-      //System.out.println("attrname: " + kvpair.getKey().getString(metadata.getPrimaryKeys().size()) + " attrvalue: " + kvpair.getValue().get(0));
       FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
     }
     return StatusCode.SUCCESS;
