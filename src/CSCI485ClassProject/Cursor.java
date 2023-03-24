@@ -166,19 +166,35 @@ public class Cursor {
     KeyValue attrKV = null;
     for (KeyValue keyvalue : keyvalueList) {
       // Find the correct kv for attribute
-      comparedAttribute = Tuple.fromBytes(keyvalue.getKey()).getString(metadata.getPrimaryKeys().size());
+      comparedAttribute = Tuple.fromBytes(keyvalue.getKey()).getString(metadata.getPrimaryKeys().size()+1);
       if (comparedAttribute.equals(attrName)) {
         //System.out.println("Attribute found: " + comparedAttribute + " matched to " + attrName);
         attrKV = keyvalue;
         break;
       }
     }
+
+   // This is janky,
+    Object valueOf = null;
+    // Check if search is being done on primary key
+    boolean searchOnPrimary = false;
+    for (String pk: metadata.getPrimaryKeys()) {
+      if (pk.equals(attrName))  {
+        searchOnPrimary = true;
+        attrKV = keyvalueList.get(0);
+        valueOf = Tuple.fromBytes(keyvalueList.get(0).getKey()).get(0);
+      }
+    }
+
     //System.out.println("Search complete");
     // If atrtribute doens't exist, it fails the comparison
     if (attrKV == null) return false;
     //System.out.println("Attribute KV found!");
     // Do comparison
-    Object valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
+    if (!searchOnPrimary) {
+      valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
+    }
+
     if (operator == ComparisonOperator.EQUAL_TO) {
       if (valueOf instanceof Integer) {
         return ((Integer) valueOf).equals((Integer) attrValue);
