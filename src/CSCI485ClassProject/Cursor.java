@@ -154,6 +154,7 @@ public class Cursor {
       // Find the correct kv for attribute
       comparedAttribute = Tuple.fromBytes(keyvalue.getKey()).getString(metadata.getPrimaryKeys().size()+1);
       if (comparedAttribute.equals(attrName)) {
+        System.out.println("Attribute found: " + comparedAttribute + " matched to " + attrName);
         attrKV = keyvalue;
         break;
       }
