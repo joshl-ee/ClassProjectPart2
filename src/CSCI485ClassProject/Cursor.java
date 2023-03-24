@@ -168,9 +168,19 @@ public class Cursor {
 
     // Create a map to hold attributes not yet changed
     HashMap<String, Integer> list = new HashMap<>();
+    List<String> namesOfAtt = new ArrayList<>(List.of(attrNames));
     for (int i = 0; i < attrNames.length; i++) {
       list.put(attrNames[i], i);
     }
+
+    // Check if invalid attributes are given
+    for (String pk : metadata.getPrimaryKeys()) {
+      if (list.get(pk) != null) namesOfAtt.remove(pk);
+    }
+    for (String attr : metadata.getAttributes().keySet()) {
+      if (list.get(attr) != null) namesOfAtt.remove(attr);
+    }
+    if (!list.isEmpty()) return StatusCode.CURSOR_UPDATE_ATTRIBUTE_NOT_FOUND;
 
     // Update non-key attributes
     for (FDBKVPair kvpair : currRecord) {
@@ -196,17 +206,7 @@ public class Cursor {
         }
       }
     }
-
-    // Check if new attributes need to be added
-    if (list.isEmpty()) return StatusCode.SUCCESS;
-    else {
-      for (String attribute : list.keySet()) {
-        Tuple newKey = new Tuple().addObject(currPK).addObject(attribute);
-        Tuple newValue = new Tuple().addObject(attrValues[list.get(attribute)]);
-        FDBHelper.setFDBKVPair(subspace, tx, new FDBKVPair(path, newKey, newValue));
-      }
-      return StatusCode.CURSOR_UPDATE_ATTRIBUTE_NOT_FOUND;
-    }
+    return StatusCode.SUCCESS;
   }
 
   public void abort() {
