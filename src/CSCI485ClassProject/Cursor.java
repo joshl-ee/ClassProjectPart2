@@ -121,12 +121,12 @@ public class Cursor {
 
   private List<KeyValue> getNextSetOfFDBKVPairs( List<KeyValue> keyvalueList) {
     // Get PK of first record
-    if (curr == null) return new ArrayList<>();
     currPK = getPKFromKeyValue(curr);
     keyvalueList.add(curr);
 
     // Get rest of attributes of first PK
     boolean newPk = false;
+    if (!iterator.hasNext()) return new ArrayList<>();
     while (iterator.hasNext() && !newPk) {
       curr = iterator.next();
       if (getPKFromKeyValue(curr).equals(currPK)) {
