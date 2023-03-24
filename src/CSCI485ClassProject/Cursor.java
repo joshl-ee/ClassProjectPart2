@@ -145,7 +145,9 @@ public class Cursor {
 
   private boolean comparison(List<KeyValue> keyvalueList) {
     // Do a comparison if initialized as a comparator
+    System.out.println("Comparison entered");
     if (operator == null) return true;
+
     String comparedAttribute;
     KeyValue attrKV = null;
     for (KeyValue keyvalue : keyvalueList) {
@@ -156,8 +158,9 @@ public class Cursor {
         break;
       }
     }
+    System.out.println("Search ocmpleet");
     if (attrKV == null) return true;
-
+    System.out.println("Attribute KV found"  );
     // Do comparison
     Object valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
     if (operator == ComparisonOperator.EQUAL_TO) {
