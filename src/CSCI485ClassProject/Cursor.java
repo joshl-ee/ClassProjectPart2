@@ -83,7 +83,7 @@ public class Cursor {
       curr = iterator.next();
     }
     else return null;
-    currRecord =  keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    currRecord = keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
     return currRecord;
   }
 
@@ -100,7 +100,7 @@ public class Cursor {
       curr = iterator.next();
     }
     else return null;
-    currRecord =  keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    currRecord = keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
     return currRecord;
   }
 
@@ -126,7 +126,7 @@ public class Cursor {
 
   public StatusCode delete() {
     for (FDBKVPair kvpair : currRecord) {
-      System.out.println("attrname: " + kvpair.getKey().getString(metadata.getPrimaryKeys().size()+1) + " attrvalue: " + kvpair.getValue().get(0));
+      System.out.println("attrname: " + kvpair.getKey().getString(metadata.getPrimaryKeys().size()) + " attrvalue: " + kvpair.getValue().get(0));
       FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
     }
     return StatusCode.SUCCESS;
