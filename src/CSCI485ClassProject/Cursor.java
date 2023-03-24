@@ -57,7 +57,8 @@ public class Cursor {
     this.tableName = tableName;
     TableManager tableManager = new TableManagerImpl();
     this.metadata = tableManager.listTables().get(tableName);
-    tableManager.closeDatabase();    TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
+    tableManager.closeDatabase();
+    TableMetadataTransformer transformer = new TableMetadataTransformer(tableName);
     this.path = transformer.getTableRecordStorePath();
     this.subspace = FDBHelper.openSubspace(tx, path);
     this.tx = tx;
