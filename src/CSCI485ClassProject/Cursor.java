@@ -215,6 +215,7 @@ public class Cursor {
         return (Integer) valueOf >= (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
+        System.out.println("I am here LONG");
         return (Long) valueOf >= (Long) attrValue;
       }
       if (valueOf instanceof Double) {
