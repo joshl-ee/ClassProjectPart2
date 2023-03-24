@@ -180,8 +180,19 @@ public class Cursor {
     // Do comparison
     Object valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
     if (operator == ComparisonOperator.EQUAL_TO) {
-      if (valueOf.equals(attrValue)) return true;
-      else return false;
+      if (valueOf instanceof Integer) {
+        return (Integer) valueOf == (Integer) attrValue;
+      }
+      if (valueOf instanceof Long) {
+        if (attrValue instanceof Integer)  return (Long) valueOf >= (Integer) attrValue;
+        return (Long) valueOf == (Long) attrValue;
+      }
+      if (valueOf instanceof Double) {
+        return (Double) valueOf == (Double) attrValue;
+      }
+      if (valueOf instanceof String) {
+        return ((String) valueOf).compareTo((String) attrValue) == 0;
+      }
     }
     if (operator == ComparisonOperator.GREATER_THAN) {
       if (valueOf instanceof Integer) {
