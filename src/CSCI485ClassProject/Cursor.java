@@ -31,6 +31,7 @@ public class Cursor {
   private final Transaction tx;
   private final Database db;
   private KeyValue curr;
+  private List<FDBKVPair> currRecord;
   private Tuple currPK;
   private AsyncIterator<KeyValue> iterator;
   private Boolean startFromBeginning = null;
@@ -82,7 +83,8 @@ public class Cursor {
       curr = iterator.next();
     }
     else return null;
-    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    currRecord =  keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    return currRecord;
   }
 
   public List<FDBKVPair> getLast() {
@@ -98,14 +100,16 @@ public class Cursor {
       curr = iterator.next();
     }
     else return null;
-    return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    currRecord =  keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+    return currRecord;
   }
 
   public List<FDBKVPair> getNext() {
     if (!startFromBeginning) return null;
     if (iterator.hasNext()) {
       List<KeyValue> keyvalueList = new ArrayList<>();
-      return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+      currRecord =  keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+      return currRecord;
     }
     else return null;
   }
@@ -114,9 +118,17 @@ public class Cursor {
     if (startFromBeginning) return null;
     if (iterator.hasNext()) {
       List<KeyValue> keyvalueList = new ArrayList<>();
-      return keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+      currRecord =  keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
+      return currRecord;
     }
     else return null;
+  }
+
+  public StatusCode delete() {
+    for (FDBKVPair kvpair : currRecord) {
+      FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
+    }
+    return StatusCode.SUCCESS;
   }
 
   private List<KeyValue> getNextSetOfFDBKVPairs( List<KeyValue> keyvalueList) {

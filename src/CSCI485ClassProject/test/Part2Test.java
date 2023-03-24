@@ -287,67 +287,67 @@ public class Part2Test {
     System.out.println("Test5 passed!");
   }
 
-//  /**
-//   * Points: 15
-//   */
-//  @Test
-//  public void unitTest6() {
-//    Cursor cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ_WRITE);
-//    assertNotNull(cursor);
-//
-//    // delete the records with odd SSN
-//    // initialize the first record
-//    Record rec = records.getFirst(cursor);
-//    assertNotNull(rec);
-//    if ((long) rec.getValueForGivenAttrName(SSN) % 2 == 1) {
-//      assertEquals(StatusCode.SUCCESS, records.deleteRecord(cursor));
-//    }
-//
-//    while (true) {
-//      rec = records.getNext(cursor);
-//      if (rec == null) {
-//        break;
-//      }
-//      long ssn = (long) rec.getValueForGivenAttrName(SSN);
-//      if (ssn % 2 == 1) {
-//        // if ssn is odd, delete it
-//        assertEquals(StatusCode.SUCCESS, records.deleteRecord(cursor));
-//      }
-//    }
-//
-//    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//
-//    // verify that odd records are gone
-//    for (int i = 0; i<updatedNumberOfRecords + initialNumberOfRecords; i++) {
-//      long ssn = i;
-//      String name = getName(i);
-//      String email = getEmail(i);
-//      long age = getAge(i);
-//      String address = getAddress(i);
-//      long salary = getSalary(i);
-//
-//      cursor = records.openCursor(EmployeeTableName, SSN, ssn, ComparisonOperator.EQUAL_TO, Cursor.Mode.READ, false);
-//      rec = records.getFirst(cursor);
-//      if (ssn % 2 == 0) {
-//        assertNotNull(rec);
-//        assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//        assertEquals(name, rec.getValueForGivenAttrName(Name));
-//        assertEquals(email, rec.getValueForGivenAttrName(Email));
-//        assertEquals(age, rec.getValueForGivenAttrName(Age));
-//        assertEquals(address, rec.getValueForGivenAttrName(Address));
-//
-//        if (i >= initialNumberOfRecords) {
-//          assertEquals(salary, rec.getValueForGivenAttrName(Salary));
-//        }
-//      } else {
-//        // odd records should have gone
-//        assertNull(rec);
-//      }
-//      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    }
-//
-//    System.out.println("Test6 passed!");
-//  }
+  /**
+   * Points: 15
+   */
+  @Test
+  public void unitTest6() {
+    Cursor cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ_WRITE);
+    assertNotNull(cursor);
+
+    // delete the records with odd SSN
+    // initialize the first record
+    Record rec = records.getFirst(cursor);
+    assertNotNull(rec);
+    if ((long) rec.getValueForGivenAttrName(SSN) % 2 == 1) {
+      assertEquals(StatusCode.SUCCESS, records.deleteRecord(cursor));
+    }
+
+    while (true) {
+      rec = records.getNext(cursor);
+      if (rec == null) {
+        break;
+      }
+      long ssn = (long) rec.getValueForGivenAttrName(SSN);
+      if (ssn % 2 == 1) {
+        // if ssn is odd, delete it
+        assertEquals(StatusCode.SUCCESS, records.deleteRecord(cursor));
+      }
+    }
+
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+
+    // verify that odd records are gone
+    for (int i = 0; i<updatedNumberOfRecords + initialNumberOfRecords; i++) {
+      long ssn = i;
+      String name = getName(i);
+      String email = getEmail(i);
+      long age = getAge(i);
+      String address = getAddress(i);
+      long salary = getSalary(i);
+
+      cursor = records.openCursor(EmployeeTableName, SSN, ssn, ComparisonOperator.EQUAL_TO, Cursor.Mode.READ, false);
+      rec = records.getFirst(cursor);
+      if (ssn % 2 == 0) {
+        assertNotNull(rec);
+        assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+        assertEquals(name, rec.getValueForGivenAttrName(Name));
+        assertEquals(email, rec.getValueForGivenAttrName(Email));
+        assertEquals(age, rec.getValueForGivenAttrName(Age));
+        assertEquals(address, rec.getValueForGivenAttrName(Address));
+
+        if (i >= initialNumberOfRecords) {
+          assertEquals(salary, rec.getValueForGivenAttrName(Salary));
+        }
+      } else {
+        // odd records should have gone
+        assertNull(rec);
+      }
+      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    }
+
+    System.out.println("Test6 passed!");
+  }
 //
 //  /**
 //   * Points: 15
