@@ -216,12 +216,12 @@ public class Cursor {
     };
     if (operator == ComparisonOperator.GREATER_THAN_OR_EQUAL_TO) {
       if (valueOf instanceof Integer) {
-        System.out.println("I am here");
+        //System.out.println("I am here");
         return (Integer) valueOf >= (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
         if (attrValue instanceof Integer)  return (Long) valueOf >= (Integer) attrValue;
-        System.out.println("I am here LONG");
+        //System.out.println("I am here LONG");
         return (Long) valueOf >= (Long) attrValue;
       }
       if (valueOf instanceof Double) {
