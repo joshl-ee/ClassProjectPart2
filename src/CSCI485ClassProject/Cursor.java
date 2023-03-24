@@ -166,6 +166,7 @@ public class Cursor {
     }
     if (operator == ComparisonOperator.GREATER_THAN) {
       if (valueOf instanceof Integer) {
+
         return (Integer) valueOf > (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
@@ -208,6 +209,7 @@ public class Cursor {
     };
     if (operator == ComparisonOperator.GREATER_THAN_OR_EQUAL_TO) {
       if (valueOf instanceof Integer) {
+        System.out.println("I am here");
         return (Integer) valueOf >= (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
