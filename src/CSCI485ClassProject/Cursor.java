@@ -181,14 +181,14 @@ public class Cursor {
     Object valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
     if (operator == ComparisonOperator.EQUAL_TO) {
       if (valueOf instanceof Integer) {
-        return (Integer) valueOf == (Integer) attrValue;
+        return ((Integer) valueOf).equals((Integer) attrValue);
       }
       if (valueOf instanceof Long) {
         if (attrValue instanceof Integer)  return (Long) valueOf >= (Integer) attrValue;
-        return (Long) valueOf == (Long) attrValue;
+        return ((Long) valueOf).equals((Long) attrValue);
       }
       if (valueOf instanceof Double) {
-        return (Double) valueOf == (Double) attrValue;
+        return ((Double) valueOf).equals((Double) attrValue);
       }
       if (valueOf instanceof String) {
         return ((String) valueOf).compareTo((String) attrValue) == 0;
