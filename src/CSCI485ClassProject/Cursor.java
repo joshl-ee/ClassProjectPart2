@@ -160,6 +160,7 @@ public class Cursor {
       }
     }
     //System.out.println("Search complete");
+    // If atrtribute doens't exist, it fails the comparison
     if (attrKV == null) return false;
     //System.out.println("Attribute KV found"  );
     // Do comparison
@@ -216,6 +217,7 @@ public class Cursor {
         return (Integer) valueOf >= (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
+        if (attrValue instanceof Integer)  return (Long) valueOf >= (Integer) attrValue;
         System.out.println("I am here LONG");
         return (Long) valueOf >= (Long) attrValue;
       }
