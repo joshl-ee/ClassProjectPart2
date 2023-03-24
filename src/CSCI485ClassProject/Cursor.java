@@ -145,7 +145,6 @@ public class Cursor {
   }
 
   private boolean comparison(List<KeyValue> keyvalueList) {
-    // Do a comparison if initialized as a comparator
     //System.out.println("Comparison entered");
     if (operator == null) return true;
 
@@ -161,7 +160,7 @@ public class Cursor {
       }
     }
     //System.out.println("Search complete");
-    if (attrKV == null) return true;
+    if (attrKV == null) return false;
     //System.out.println("Attribute KV found"  );
     // Do comparison
     Object valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
