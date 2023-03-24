@@ -10,6 +10,7 @@ import com.apple.foundationdb.tuple.Tuple;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static CSCI485ClassProject.FDBHelper.getAllKeyValuePairsOfSubdirectory;
@@ -147,7 +148,46 @@ public class Cursor {
     if (startFromBeginning == null) return StatusCode.CURSOR_NOT_INITIALIZED;
     if (mode == null) return StatusCode.CURSOR_INVALID;
     if (currRecord == null) return StatusCode.CURSOR_REACH_TO_EOF;
-    return StatusCode.SUCCESS;
+
+    HashMap<String, Integer> list = new HashMap<>();
+    for (int i = 0; i < attrNames.length; i++) {
+      list.put(attrNames[i], i);
+    }
+    // Update attributes
+    for (FDBKVPair kvpair : currRecord) {
+      for (int i = 0; i < attrNames.length; i++) {
+        if (kvpair.getKey().getString(metadata.getPrimaryKeys().size()-1).equals(attrNames[i])) {
+          FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
+          list.remove(attrNames[i]);
+          Tuple newValue = new Tuple().addObject(attrValues[i]);
+          FDBHelper.setFDBKVPair(subspace, tx, new FDBKVPair(path, kvpair.getKey(), newValue));
+        }
+      }
+    }
+
+    // Check if PKs are being updated
+    for (int i = 0; i < attrNames.length; i++) {
+      if (metadata.getPrimaryKeys().contains(attrNames[i])) {
+        list.remove(attrNames[i]);
+        for (FDBKVPair kvpair : currRecord) {
+          FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
+          Tuple newKey = new Tuple().addObject(attrValues[i]).addObject(attrNames[i]);
+          Tuple newValue = new Tuple().addObject(attrValues[i]);
+          FDBHelper.setFDBKVPair(subspace, tx, new FDBKVPair(path, newKey, newValue));
+        }
+      }
+    }
+
+    // Check if new attributes need to be added
+    if (list.isEmpty()) return StatusCode.SUCCESS;
+    else {
+      for (String attribute : list.keySet()) {
+        Tuple newKey = new Tuple().addObject(currPK).addObject(attribute);
+        Tuple newValue = new Tuple().addObject(attrValues[list.get(attribute)]);
+        FDBHelper.setFDBKVPair(subspace, tx, new FDBKVPair(path, newKey, newValue));
+      }
+      return StatusCode.CURSOR_UPDATE_ATTRIBUTE_NOT_FOUND;
+    }
   }
 
   private List<KeyValue> getNextSetOfFDBKVPairs( List<KeyValue> keyvalueList) {
@@ -333,7 +373,6 @@ public class Cursor {
   public boolean commit() {
     boolean success = tryCommitTx(tx, 20);
     if (success) {
-      //startFromBeginning = null;
       iterator = null;
       operator = null;
       mode = null;
