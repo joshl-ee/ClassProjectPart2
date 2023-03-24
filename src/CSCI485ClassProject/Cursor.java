@@ -156,7 +156,7 @@ public class Cursor {
     // Update attributes
     for (FDBKVPair kvpair : currRecord) {
       for (int i = 0; i < attrNames.length; i++) {
-        if (kvpair.getKey().getString(metadata.getPrimaryKeys().size()-1).equals(attrNames[i])) {
+        if (kvpair.getKey().getString(metadata.getPrimaryKeys().size()).equals(attrNames[i])) {
           FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
           list.remove(attrNames[i]);
           Tuple newValue = new Tuple().addObject(attrValues[i]);
