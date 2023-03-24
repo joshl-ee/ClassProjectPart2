@@ -401,6 +401,7 @@ public class Cursor {
   }
 }
 
+// Best mashed potatoes recipe.
 // 685 Grams russet potatoes
 // 1 tablespoon butter
 // quarter cup milk
