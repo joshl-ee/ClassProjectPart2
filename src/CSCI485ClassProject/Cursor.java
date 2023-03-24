@@ -23,15 +23,15 @@ public class Cursor {
     READ_WRITE
   }
 
-  // your code here
+  // THIS IS CONSTANT SPACE.
   private Mode mode;
   private final String tableName;
   private final DirectorySubspace subspace;
   private final TableMetadata metadata;
   private final List<String> path;
   private final Transaction tx;
-  private final Database db;
   private KeyValue curr;
+  // Except this, which holds as a single record
   private List<FDBKVPair> currRecord;
   private Tuple currPK;
   private AsyncIterator<KeyValue> iterator;
@@ -40,7 +40,7 @@ public class Cursor {
   private Object attrValue;
   private ComparisonOperator operator = null;
   private boolean isUsingIndex;
-  public Cursor(String tableName, Cursor.Mode mode, Database db, Transaction tx) {
+  public Cursor(String tableName, Cursor.Mode mode, Transaction tx) {
     this.mode = mode;
     this.tableName = tableName;
     TableManager tableManager = new TableManagerImpl();
@@ -51,10 +51,9 @@ public class Cursor {
     this.path = transformer.getTableRecordStorePath();
     this.subspace = FDBHelper.openSubspace(tx, path);
     this.tx = tx;
-    this.db = db;
   }
 
-  public Cursor(String tableName, String attrName, Object attrValue, ComparisonOperator operator, Cursor.Mode mode, boolean isUsingIndex, Database db, Transaction tx) {
+  public Cursor(String tableName, String attrName, Object attrValue, ComparisonOperator operator, Cursor.Mode mode, boolean isUsingIndex, Transaction tx) {
     this.mode = mode;
     this.tableName = tableName;
     TableManager tableManager = new TableManagerImpl();
@@ -64,7 +63,6 @@ public class Cursor {
     this.path = transformer.getTableRecordStorePath();
     this.subspace = FDBHelper.openSubspace(tx, path);
     this.tx = tx;
-    this.db = db;
     this.attrName = attrName;
     this.attrValue = attrValue;
     this.operator = operator;
@@ -75,15 +73,18 @@ public class Cursor {
     // Check if initialization happened already
     if (startFromBeginning != null) return null;
     startFromBeginning = true;
+
     // Create the iterator
     iterator = initialize(false);
-    //System.out.println("Has first value: " + iterator.hasNext());
-    // Find all attributes of the first primary key. Sets the cursor's pointer to the first attribute keyvalue of the next pk
+
+    // Iterates into first key
     List<KeyValue> keyvalueList = new ArrayList<>();
     if (iterator.hasNext()) {
       curr = iterator.next();
     }
     else return null;
+
+    // Find all KeyValues that have the first PK
     currRecord = keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
     return currRecord;
   }
@@ -92,51 +93,66 @@ public class Cursor {
     // Check if initialization happened already
     if (startFromBeginning != null) return null;
     startFromBeginning = false;
+
     // Create the iterator
     iterator = initialize(true);
-    //System.out.println("Has first value: " + iterator.hasNext());
-    // Find all attributes of the last primary key
+
+    // Iterate into first key
     List<KeyValue> keyvalueList = new ArrayList<>();
     if (iterator.hasNext()) {
       curr = iterator.next();
     }
     else return null;
+
+    // Find all KeyValues that have the first PK
     currRecord = keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
     return currRecord;
   }
 
   public List<FDBKVPair> getNext() {
+    // Check that traversal protocol is correct
     if (!startFromBeginning) return null;
+
+    // Iterate into next KeyValue with new PK
     if (iterator.hasNext()) {
       List<KeyValue> keyvalueList = new ArrayList<>();
+      // Find all KeyValues that have the new PK
       currRecord =  keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
       return currRecord;
     }
     else {
+      // Else, end is reached.
       currRecord = null;
       return null;
     }
   }
 
   public List<FDBKVPair> getPrevious() {
+    // Check that traversal protocol is correct
     if (startFromBeginning) return null;
+
+    // Iterate into next KeyValue with new PK
     if (iterator.hasNext()) {
       List<KeyValue> keyvalueList = new ArrayList<>();
+      // Find all KeyValues that have the new PK
       currRecord =  keyvalueToFDBKVPair(getNextSetOfFDBKVPairs(keyvalueList));
       return currRecord;
     }
     else {
+      // Else, end is reached.
       currRecord = null;
       return null;
     }
   }
 
   public StatusCode delete() {
+    // Miscellaneous checks for stuff
     if (mode == Mode.READ) return StatusCode.CURSOR_INVALID;
     if (startFromBeginning == null) return StatusCode.CURSOR_NOT_INITIALIZED;
     if (mode == null) return StatusCode.CURSOR_INVALID;
     if (currRecord == null) return StatusCode.CURSOR_REACH_TO_EOF;
-    //System.out.println("attrname: " + currRecord.get(0).getKey().get(metadata.getPrimaryKeys().size()-1));
+
+    // Delete the record currently being pointed to
     for (FDBKVPair kvpair : currRecord) {
       FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
     }
@@ -144,16 +160,19 @@ public class Cursor {
   }
 
   public StatusCode update(String[] attrNames, Object[] attrValues) {
+    // Miscellaneous checks for stuff
     if (mode == Mode.READ) return StatusCode.CURSOR_INVALID;
     if (startFromBeginning == null) return StatusCode.CURSOR_NOT_INITIALIZED;
     if (mode == null) return StatusCode.CURSOR_INVALID;
     if (currRecord == null) return StatusCode.CURSOR_REACH_TO_EOF;
 
+    // Create a map to hold attributes not yet changed
     HashMap<String, Integer> list = new HashMap<>();
     for (int i = 0; i < attrNames.length; i++) {
       list.put(attrNames[i], i);
     }
-    // Update attributes
+
+    // Update non-key attributes
     for (FDBKVPair kvpair : currRecord) {
       for (int i = 0; i < attrNames.length; i++) {
         if (kvpair.getKey().getString(metadata.getPrimaryKeys().size()).equals(attrNames[i])) {
@@ -165,7 +184,7 @@ public class Cursor {
       }
     }
 
-    // Check if PKs are being updated
+    // Update PK attributes
     for (int i = 0; i < attrNames.length; i++) {
       if (metadata.getPrimaryKeys().contains(attrNames[i])) {
         list.remove(attrNames[i]);
@@ -190,23 +209,29 @@ public class Cursor {
     }
   }
 
+  public void abort() {
+    // Abort method
+    tx.cancel();
+    this.commit();
+  }
+
   private List<KeyValue> getNextSetOfFDBKVPairs( List<KeyValue> keyvalueList) {
-    // Get PK of first record
+    // Get the PK of the new record to obtain
     currPK = getPKFromKeyValue(curr);
     keyvalueList.add(curr);
 
-    // Get rest of attributes of first PK
+    // Find all KeyValues of the current PK and add it to list
     boolean newPk = false;
     if (!iterator.hasNext()) return new ArrayList<>();
     while (iterator.hasNext() && !newPk) {
       curr = iterator.next();
       if (getPKFromKeyValue(curr).equals(currPK)) {
-        //System.out.println("While loop entered");
         keyvalueList.add(curr);
       }
       else newPk = true;
     }
-    // Do comparison here. If comparison fails, call getNextSetofFDBKVPairs again
+
+    // Check if the record conforms to comparison. If no, find the next one.
     if (comparison(keyvalueList)) {
       return keyvalueList;
     }
@@ -217,55 +242,51 @@ public class Cursor {
   }
 
   private boolean comparison(List<KeyValue> keyvalueList) {
-    //System.out.println("Comparison entered");
+    // Ensure that comparison constructor has been called
     if (operator == null) return true;
 
+    // Find the attribute being compared
     String comparedAttribute;
     KeyValue attrKV = null;
     for (KeyValue keyvalue : keyvalueList) {
       // Find the correct kv for attribute
       comparedAttribute = Tuple.fromBytes(keyvalue.getKey()).getString(metadata.getPrimaryKeys().size()+1);
       if (comparedAttribute.equals(attrName)) {
-        //System.out.println("Attribute found: " + comparedAttribute + " matched to " + attrName);
         attrKV = keyvalue;
         break;
       }
     }
 
-   // This is janky,
+    // Check if comparison is being done on primary key. Previous lines will not find it if this is the case.
     Object valueOf = null;
-    // Check if search is being done on primary key
     boolean searchOnPrimary = false;
     for (String pk: metadata.getPrimaryKeys()) {
       if (pk.equals(attrName))  {
-        //System.out.println("Name here should be ssn: " + attrName);
         searchOnPrimary = true;
         attrKV = keyvalueList.get(0);
         valueOf = Tuple.fromBytes(keyvalueList.get(0).getKey()).get(1);
       }
     }
 
-    //System.out.println("Search complete");
-    // If atrtribute doens't exist, it fails the comparison
+    // If attribute doesn't exist, it fails the comparison
     if (attrKV == null) return false;
-    //System.out.println("Attribute KV found!");
-    // Do comparison
+
+    // If attribute is not PK, set it as previously found
     if (!searchOnPrimary) {
       valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
     }
 
+    // Do the comparison, with type checking.
     if (operator == ComparisonOperator.EQUAL_TO) {
       if (valueOf instanceof Integer) {
-        return ((Integer) valueOf).equals((Integer) attrValue);
+        return valueOf.equals(attrValue);
       }
       if (valueOf instanceof Long) {
-        //System.out.println("Here??");
         if (attrValue instanceof Integer)  return ((Long) valueOf).intValue() == (Integer) attrValue;
-        //System.out.println("Comparison here is: " + (((Long) valueOf).longValue() == ((Long) attrValue).longValue()));
         return ((Long) valueOf).longValue() == ((Long) attrValue).longValue();
       }
       if (valueOf instanceof Double) {
-        return ((Double) valueOf).equals((Double) attrValue);
+        return valueOf.equals(attrValue);
       }
       if (valueOf instanceof String) {
         return ((String) valueOf).compareTo((String) attrValue) == 0;
@@ -285,7 +306,7 @@ public class Cursor {
       if (valueOf instanceof String) {
         return ((String) valueOf).compareTo((String) attrValue) > 0;
       }
-    };
+    }
     if (operator == ComparisonOperator.LESS_THAN) {
       if (valueOf instanceof Integer) {
         return (Integer) valueOf < (Integer) attrValue;
@@ -300,7 +321,7 @@ public class Cursor {
       if (valueOf instanceof String) {
         return ((String) valueOf).compareTo((String) attrValue) < 0;
       }
-    };
+    }
     if (operator == ComparisonOperator.LESS_THAN_OR_EQUAL_TO) {
       if (valueOf instanceof Integer) {
         return (Integer) valueOf <= (Integer) attrValue;
@@ -315,15 +336,13 @@ public class Cursor {
       if (valueOf instanceof String) {
         return ((String) valueOf).compareTo((String) attrValue) <= 0;
       }
-    };
+    }
     if (operator == ComparisonOperator.GREATER_THAN_OR_EQUAL_TO) {
       if (valueOf instanceof Integer) {
-        //System.out.println("I am here");
         return (Integer) valueOf >= (Integer) attrValue;
       }
       if (valueOf instanceof Long) {
         if (attrValue instanceof Integer)  return (Long) valueOf >= (Integer) attrValue;
-        //System.out.println("I am here LONG");
         return (Long) valueOf >= (Long) attrValue;
       }
       if (valueOf instanceof Double) {
@@ -332,26 +351,27 @@ public class Cursor {
       if (valueOf instanceof String) {
         return ((String) valueOf).compareTo((String) attrValue) >= 0;
       }
-    };
+    }
     return false;
   }
   private Tuple getPKFromKeyValue(KeyValue keyvalue) {
+    // Get PK from KeyValue object
     Tuple pk = new Tuple();
-    //System.out.println("Size of primary keys: " + metadata.getPrimaryKeys().size());
     for (int i = 0; i < metadata.getPrimaryKeys().size(); i++) {
-      //System.out.println("pk is null: " + isNull(pk) + "keyvalue is null: " + isNull(keyvalue));
-      // popFront is needed since first value in key is for something else
       pk = pk.addObject(Tuple.fromBytes(keyvalue.getKey()).popFront().get(i));
     }
     return pk;
   }
+
   private AsyncIterator<KeyValue> initialize(boolean reverse) {
-      Range range = subspace.range();
-      AsyncIterable<KeyValue> iterable = tx.getRange(range, ReadTransaction.ROW_LIMIT_UNLIMITED, reverse);
-      return iterable.iterator();
+    // Initialize the iterator.
+    Range range = subspace.range();
+    AsyncIterable<KeyValue> iterable = tx.getRange(range, ReadTransaction.ROW_LIMIT_UNLIMITED, reverse);
+    return iterable.iterator();
   }
 
   private List<FDBKVPair> keyvalueToFDBKVPair(List<KeyValue> keyvalueList) {
+    // Method to change List<KeyValue> to List<FDBKVPair>
     List<FDBKVPair> FDBKVPairList = new ArrayList<>();
     for (KeyValue keyvalue : keyvalueList) {
       Tuple keyTuple = Tuple.fromBytes(keyvalue.getKey()).popFront();
@@ -362,17 +382,16 @@ public class Cursor {
     return FDBKVPairList;
   }
 
-  public TableMetadata getMetadata() {
-    return metadata;
-  }
-
   public String getTableName() {
     return tableName;
   }
 
   public boolean commit() {
+    // Commit.
     boolean success = tryCommitTx(tx, 20);
+
     if (success) {
+      // These ensure that calling any methods on a committed tx will throw error.
       iterator = null;
       operator = null;
       mode = null;

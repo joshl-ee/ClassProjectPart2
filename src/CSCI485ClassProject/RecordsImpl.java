@@ -14,7 +14,7 @@ import java.util.*;
 
 public class RecordsImpl implements Records{
 
-  private Database db;
+  private final Database db;
 
   public RecordsImpl() {
     db = FDBHelper.initialization();
@@ -22,7 +22,6 @@ public class RecordsImpl implements Records{
 
   @Override
   public StatusCode insertRecord(String tableName, String[] primaryKeys, Object[] primaryKeysValues, String[] attrNames, Object[] attrValues) {
-
     Transaction tx = FDBHelper.openTransaction(db);
     // Check if table exists
     if (!FDBHelper.doesSubdirectoryExists(tx, Collections.singletonList(tableName))) {
@@ -37,6 +36,7 @@ public class RecordsImpl implements Records{
       FDBHelper.closeTransaction(tx);
       return StatusCode.DATA_RECORD_PRIMARY_KEYS_UNMATCHED;
     }
+
     // Check if given attributes are valid
     if (attrNames == null || attrValues == null || attrNames.length == 0 || attrValues.length == 0 || attrNames.length != attrValues.length) {
       FDBHelper.abortTransaction(tx);
@@ -44,6 +44,7 @@ public class RecordsImpl implements Records{
       return StatusCode.DATA_RECORD_CREATION_ATTRIBUTES_INVALID;
     }
 
+    // Add newly introduced attributes
     TableManagerImpl tableManager = new TableManagerImpl();
     HashMap<String, AttributeType> tableAttributes = tableManager.listTables().get(tableName).getAttributes();
     HashMap<String, Object> newAttributes = new HashMap<>();
@@ -55,9 +56,8 @@ public class RecordsImpl implements Records{
         newAttributes.remove(attribute);
       }
     }
-
+    // Set type of new attributes
     for (String newAttribute : newAttributes.keySet()) {
-      //System.out.println("GERERERE " + newAttributes.get(newAttribute));
       if (newAttributes.get(newAttribute) instanceof Integer) tableManager.addAttribute(tableName, newAttribute, AttributeType.INT);
       if (newAttributes.get(newAttribute) instanceof Long) tableManager.addAttribute(tableName, newAttribute, AttributeType.INT);
       if (newAttributes.get(newAttribute) instanceof Double) tableManager.addAttribute(tableName, newAttribute, AttributeType.DOUBLE);
@@ -122,6 +122,7 @@ public class RecordsImpl implements Records{
       FDBHelper.setFDBKVPair(dir, tx, new FDBKVPair(recordPath, keyTuple, valueTuple));
     }
 
+    // Done
     FDBHelper.commitTransaction(tx);
     FDBHelper.closeTransaction(tx);
     return StatusCode.SUCCESS;
@@ -129,29 +130,32 @@ public class RecordsImpl implements Records{
 
   @Override
   public Cursor openCursor(String tableName, Cursor.Mode mode) {
+    // Call cursor const. method and assign a tx to it
     Transaction tx = FDBHelper.openTransaction(db);
-    return new Cursor(tableName, mode, db, tx);
+    return new Cursor(tableName, mode, tx);
   }
 
 
   @Override
   public Cursor openCursor(String tableName, String attrName, Object attrValue, ComparisonOperator operator, Cursor.Mode mode, boolean isUsingIndex) {
+    // Call cursor const. method and assign a tx to it
     Transaction tx = FDBHelper.openTransaction(db);
-    return new Cursor(tableName, attrName, attrValue, operator, mode, isUsingIndex, db, tx);
+    return new Cursor(tableName, attrName, attrValue, operator, mode, isUsingIndex, tx);
   }
 
   @Override
   public Record getFirst(Cursor cursor) {
+    // Call cursor getFirst method
     List<FDBKVPair> KVPair = cursor.getFirst();
     if (KVPair == null) {
       return null;
     }
-
     return KVPairListToRecord(KVPair, cursor.getTableName());
   }
 
   @Override
   public Record getLast(Cursor cursor) {
+    // Call cursor getLast method
     List<FDBKVPair> KVPair = cursor.getLast();
     if (KVPair == null) {
       return null;
@@ -160,8 +164,10 @@ public class RecordsImpl implements Records{
   }
 
   public Record KVPairListToRecord(List<FDBKVPair> KVPair, String tableName) {
+    // Go from List<FDBFVPair> to Record
     Record record = new Record();
-    // Set primary key
+
+    // Set primary keys
     TableManagerImpl tableManager = new TableManagerImpl();
     List<String> primaryKeys = tableManager.listTables().get(tableName).getPrimaryKeys();
     tableManager.closeDatabase();
@@ -169,15 +175,16 @@ public class RecordsImpl implements Records{
     for (i = 0; i < primaryKeys.size(); i++) {
       record.setAttrNameAndValue(primaryKeys.get(i), KVPair.get(i).getKey().get(i));
     }
+
     // Set attributes
     for (FDBKVPair kvpair: KVPair) {
-      //System.out.println("0th: " + kvpair.getValue().get(0));
       record.setAttrNameAndValue(kvpair.getKey().getString(i), kvpair.getValue().get(0));
     }
     return record;
   }
   @Override
   public Record getNext(Cursor cursor) {
+    // Call cursor method getNext
     List<FDBKVPair> KVPair = cursor.getNext();
     if (KVPair == null) {
       return null;
@@ -188,6 +195,7 @@ public class RecordsImpl implements Records{
 
   @Override
   public Record getPrevious(Cursor cursor) {
+    // Call cursor method getPrevious
     List<FDBKVPair> KVPair = cursor.getPrevious();
     if (KVPair == null) {
       return null;
@@ -198,16 +206,19 @@ public class RecordsImpl implements Records{
 
   @Override
   public StatusCode updateRecord(Cursor cursor, String[] attrNames, Object[] attrValues) {
+    // Call cursor method update
     return cursor.update(attrNames, attrValues);
   }
 
   @Override
   public StatusCode deleteRecord(Cursor cursor) {
+    // Call cursor method delete
     return cursor.delete();
   }
 
   @Override
   public StatusCode commitCursor(Cursor cursor) {
+    // Commit cursor
     boolean committed = cursor.commit();
     if (committed) return StatusCode.SUCCESS;
     else return StatusCode.CURSOR_INVALID;
@@ -215,6 +226,8 @@ public class RecordsImpl implements Records{
 
   @Override
   public StatusCode abortCursor(Cursor cursor) {
+    // Call abort method
+    cursor.abort();
     return null;
   }
 
@@ -224,6 +237,7 @@ public class RecordsImpl implements Records{
   }
   @Override
   public void closeDatabase() {
+    // Custom method to close database
     FDBHelper.close(db);
   }
 }
