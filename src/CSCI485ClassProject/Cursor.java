@@ -10,6 +10,7 @@ import com.apple.foundationdb.tuple.Tuple;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -168,7 +169,7 @@ public class Cursor {
 
     // Create a map to hold attributes not yet changed
     HashMap<String, Integer> list = new HashMap<>();
-    List<String> namesOfAtt = new ArrayList<>(List.of(attrNames));
+    List<String> namesOfAtt = new ArrayList<>(Arrays.asList(attrNames));
     for (int i = 0; i < attrNames.length; i++) {
       list.put(attrNames[i], i);
     }
