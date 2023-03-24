@@ -329,6 +329,7 @@ public class Part2Test {
       cursor = records.openCursor(EmployeeTableName, SSN, ssn, ComparisonOperator.EQUAL_TO, Cursor.Mode.READ, false);
       rec = records.getFirst(cursor);
       if (ssn % 2 == 0) {
+        System.out.println("SSN: " + ssn);
         assertNotNull(rec);
         assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
         assertEquals(name, rec.getValueForGivenAttrName(Name));
