@@ -349,119 +349,119 @@ public class Part2Test {
 
     System.out.println("Test6 passed!");
   }
-//
-//  /**
-//   * Points: 15
-//   */
-//  @Test
-//  public void unitTest7() {
-//    // insert the odd records back
-//    for (int i = 0; i<updatedNumberOfRecords + initialNumberOfRecords; i++) {
-//      long ssn = i;
-//      String name = getName(i);
-//      String email = getEmail(i);
-//      long age = getAge(i);
-//      String address = getAddress(i);
-//      long salary = getSalary(i);
-//
-//      Object[] primaryKeyVal = new Object[] {ssn};
-//      Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address, salary};
-//      if (ssn % 2 == 1) {
-//        assertEquals(StatusCode.SUCCESS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, UpdatedEmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
-//      } else {
-//        assertEquals(StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, UpdatedEmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
-//      }
-//    }
-//
-//    // verify that odd records are back
-//    Cursor cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ_WRITE);
-//    assertNotNull(cursor);
-//
-//    // verify that all records are there, and delete the odd SSN records again
-//    Record rec = records.getFirst(cursor);
-//    // verify the first record
-//    assertNotNull(rec);
-//    long ssn = 0;
-//    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//    ssn++;
-//
-//
-//    while (true) {
-//      rec = records.getNext(cursor);
-//      if (rec == null) {
-//        break;
-//      }
-//      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
-//      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
-//      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
-//      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
-//
-//      if (ssn % 2 == 1) {
-//        // delete the odd SSN records
-//        assertEquals(StatusCode.SUCCESS, records.deleteRecord(cursor));
-//      }
-//      ssn++;
-//    }
-//
-//    assertEquals(StatusCode.CURSOR_REACH_TO_EOF, records.deleteRecord(cursor));
-//    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    assertEquals(StatusCode.CURSOR_INVALID, records.deleteRecord(cursor));
-//
-//    // update even SSN records to be odd
-//    cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ_WRITE);
-//    assertNotNull(cursor);
-//
-//    assertEquals(StatusCode.CURSOR_NOT_INITIALIZED, records.updateRecord(cursor, new String[]{SSN}, new Object[]{15}));
-//
-//    rec = records.getFirst(cursor);
-//    assertNotNull(rec);
-//    long recSSN = (long) rec.getValueForGivenAttrName(SSN);
-//    assertEquals(StatusCode.SUCCESS, records.updateRecord(cursor, new String[]{SSN}, new Object[]{recSSN+1}));
-//    assertEquals(StatusCode.CURSOR_UPDATE_ATTRIBUTE_NOT_FOUND, records.updateRecord(cursor, new String[]{"ManagerSSN"}, new Object[]{666}));
-//
-//    while (true) {
-//      rec = records.getNext(cursor);
-//      if (rec == null) {
-//        break;
-//      }
-//      recSSN = (long) rec.getValueForGivenAttrName(SSN);
-//      assertEquals(StatusCode.SUCCESS, records.updateRecord(cursor, new String[]{SSN}, new Object[]{recSSN+1}));
-//    }
-//
-//    assertEquals(StatusCode.CURSOR_REACH_TO_EOF, records.updateRecord(cursor, new String[]{SSN}, new Object[]{485}));
-//    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//
-//    // verify the odd number records are there
-//    for (int i = 0; i<updatedNumberOfRecords + initialNumberOfRecords; i++) {
-//      ssn = i;
-//
-//      cursor = records.openCursor(EmployeeTableName, SSN, ssn, ComparisonOperator.EQUAL_TO, Cursor.Mode.READ, false);
-//      rec = records.getFirst(cursor);
-//      if (ssn % 2 == 1) {
-//
-//        String name = getName(i-1);
-//        String email = getEmail(i-1);
-//        long age = getAge(i-1);
-//        String address = getAddress(i-1);
-//
-//        assertNotNull(rec);
-//        assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
-//        assertEquals(name, rec.getValueForGivenAttrName(Name));
-//        assertEquals(email, rec.getValueForGivenAttrName(Email));
-//        assertEquals(age, rec.getValueForGivenAttrName(Age));
-//        assertEquals(address, rec.getValueForGivenAttrName(Address));
-//      } else {
-//        // even records should have gone
-//        assertNull(rec);
-//      }
-//
-//      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
-//    }
-//    System.out.println("Test7 passed!");
-//  }
+
+  /**
+   * Points: 15
+   */
+  @Test
+  public void unitTest7() {
+    // insert the odd records back
+    for (int i = 0; i<updatedNumberOfRecords + initialNumberOfRecords; i++) {
+      long ssn = i;
+      String name = getName(i);
+      String email = getEmail(i);
+      long age = getAge(i);
+      String address = getAddress(i);
+      long salary = getSalary(i);
+
+      Object[] primaryKeyVal = new Object[] {ssn};
+      Object[] nonPrimaryKeyVal = new Object[] {name, email, age, address, salary};
+      if (ssn % 2 == 1) {
+        assertEquals(StatusCode.SUCCESS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, UpdatedEmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
+      } else {
+        assertEquals(StatusCode.DATA_RECORD_CREATION_RECORD_ALREADY_EXISTS, records.insertRecord(EmployeeTableName, EmployeeTablePKAttributes, primaryKeyVal, UpdatedEmployeeTableNonPKAttributeNames, nonPrimaryKeyVal));
+      }
+    }
+
+    // verify that odd records are back
+    Cursor cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ_WRITE);
+    assertNotNull(cursor);
+
+    // verify that all records are there, and delete the odd SSN records again
+    Record rec = records.getFirst(cursor);
+    // verify the first record
+    assertNotNull(rec);
+    long ssn = 0;
+    assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+    assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+    assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+    assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+    assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+    ssn++;
+
+
+    while (true) {
+      rec = records.getNext(cursor);
+      if (rec == null) {
+        break;
+      }
+      assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+      assertEquals(getName(ssn), rec.getValueForGivenAttrName(Name));
+      assertEquals(getEmail(ssn), rec.getValueForGivenAttrName(Email));
+      assertEquals(getAge(ssn), rec.getValueForGivenAttrName(Age));
+      assertEquals(getAddress(ssn), rec.getValueForGivenAttrName(Address));
+
+      if (ssn % 2 == 1) {
+        // delete the odd SSN records
+        assertEquals(StatusCode.SUCCESS, records.deleteRecord(cursor));
+      }
+      ssn++;
+    }
+
+    assertEquals(StatusCode.CURSOR_REACH_TO_EOF, records.deleteRecord(cursor));
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    assertEquals(StatusCode.CURSOR_INVALID, records.deleteRecord(cursor));
+
+    // update even SSN records to be odd
+    cursor = records.openCursor(EmployeeTableName, Cursor.Mode.READ_WRITE);
+    assertNotNull(cursor);
+
+    assertEquals(StatusCode.CURSOR_NOT_INITIALIZED, records.updateRecord(cursor, new String[]{SSN}, new Object[]{15}));
+
+    rec = records.getFirst(cursor);
+    assertNotNull(rec);
+    long recSSN = (long) rec.getValueForGivenAttrName(SSN);
+    assertEquals(StatusCode.SUCCESS, records.updateRecord(cursor, new String[]{SSN}, new Object[]{recSSN+1}));
+    assertEquals(StatusCode.CURSOR_UPDATE_ATTRIBUTE_NOT_FOUND, records.updateRecord(cursor, new String[]{"ManagerSSN"}, new Object[]{666}));
+
+    while (true) {
+      rec = records.getNext(cursor);
+      if (rec == null) {
+        break;
+      }
+      recSSN = (long) rec.getValueForGivenAttrName(SSN);
+      assertEquals(StatusCode.SUCCESS, records.updateRecord(cursor, new String[]{SSN}, new Object[]{recSSN+1}));
+    }
+
+    assertEquals(StatusCode.CURSOR_REACH_TO_EOF, records.updateRecord(cursor, new String[]{SSN}, new Object[]{485}));
+    assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+
+    // verify the odd number records are there
+    for (int i = 0; i<updatedNumberOfRecords + initialNumberOfRecords; i++) {
+      ssn = i;
+
+      cursor = records.openCursor(EmployeeTableName, SSN, ssn, ComparisonOperator.EQUAL_TO, Cursor.Mode.READ, false);
+      rec = records.getFirst(cursor);
+      if (ssn % 2 == 1) {
+
+        String name = getName(i-1);
+        String email = getEmail(i-1);
+        long age = getAge(i-1);
+        String address = getAddress(i-1);
+
+        assertNotNull(rec);
+        assertEquals(ssn, rec.getValueForGivenAttrName(SSN));
+        assertEquals(name, rec.getValueForGivenAttrName(Name));
+        assertEquals(email, rec.getValueForGivenAttrName(Email));
+        assertEquals(age, rec.getValueForGivenAttrName(Age));
+        assertEquals(address, rec.getValueForGivenAttrName(Address));
+      } else {
+        // even records should have gone
+        assertNull(rec);
+      }
+
+      assertEquals(StatusCode.SUCCESS, records.commitCursor(cursor));
+    }
+    System.out.println("Test7 passed!");
+  }
 }

@@ -180,7 +180,7 @@ public class Cursor {
     boolean searchOnPrimary = false;
     for (String pk: metadata.getPrimaryKeys()) {
       if (pk.equals(attrName))  {
-        System.out.println("Name here should be ssn: " + attrName);
+        //System.out.println("Name here should be ssn: " + attrName);
         searchOnPrimary = true;
         attrKV = keyvalueList.get(0);
         valueOf = Tuple.fromBytes(keyvalueList.get(0).getKey()).get(1);
