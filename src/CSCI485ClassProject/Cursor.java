@@ -333,7 +333,7 @@ public class Cursor {
   public boolean commit() {
     boolean success = tryCommitTx(tx, 20);
     if (success) {
-      startFromBeginning = null;
+      //startFromBeginning = null;
       iterator = null;
       operator = null;
       mode = null;
