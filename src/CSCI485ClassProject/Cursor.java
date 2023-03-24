@@ -181,7 +181,7 @@ public class Cursor {
     for (String attr : metadata.getAttributes().keySet()) {
       if (list.get(attr) != null) namesOfAtt.remove(attr);
     }
-    if (!list.isEmpty()) return StatusCode.CURSOR_UPDATE_ATTRIBUTE_NOT_FOUND;
+    if (!namesOfAtt.isEmpty()) return StatusCode.CURSOR_UPDATE_ATTRIBUTE_NOT_FOUND;
 
     // Update non-key attributes
     for (FDBKVPair kvpair : currRecord) {
