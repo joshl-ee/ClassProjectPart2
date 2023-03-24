@@ -185,6 +185,7 @@ public class Cursor {
       }
       if (valueOf instanceof Long) {
         if (attrValue instanceof Integer)  return ((Long) valueOf).intValue() == (Integer) attrValue;
+        System.out.println("Comparison here is: " + (((Long) valueOf).longValue() == ((Long) attrValue).longValue()));
         return ((Long) valueOf).longValue() == ((Long) attrValue).longValue();
       }
       if (valueOf instanceof Double) {
