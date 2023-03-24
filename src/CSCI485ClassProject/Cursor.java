@@ -176,7 +176,7 @@ public class Cursor {
     //System.out.println("Search complete");
     // If atrtribute doens't exist, it fails the comparison
     if (attrKV == null) return false;
-    //System.out.println("Attribute KV found"  );
+    System.out.println("Attribute KV found!");
     // Do comparison
     Object valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
     if (operator == ComparisonOperator.EQUAL_TO) {
