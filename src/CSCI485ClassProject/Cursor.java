@@ -34,6 +34,10 @@ public class Cursor {
   private Tuple currPK;
   private AsyncIterator<KeyValue> iterator;
   private Boolean startFromBeginning = null;
+  private String attrName;
+  private Object attrValue;
+  private ComparisonOperator operator = null;
+  private boolean isUsingIndex;
   public Cursor(String tableName, Cursor.Mode mode, Database db, Transaction tx) {
     this.mode = mode;
     this.tableName = tableName;
@@ -58,6 +62,10 @@ public class Cursor {
     this.subspace = FDBHelper.openSubspace(tx, path);
     this.tx = tx;
     this.db = db;
+    this.attrName = attrName;
+    this.attrValue = attrValue;
+    this.operator = operator;
+    this.isUsingIndex = isUsingIndex;
   }
 
   public List<FDBKVPair> getFirst() {
@@ -125,9 +133,95 @@ public class Cursor {
       }
       else newPk = true;
     }
-    return keyvalueList;
+    // Do comparison here. If comparison fails, call getNextSetofFDBKVPairs again
+    if (comparison(keyvalueList)) {
+      return keyvalueList;
+    }
+    else {
+      List<KeyValue> keyvalueListRedo = new ArrayList<>();
+      return getNextSetOfFDBKVPairs(keyvalueListRedo);
+    }
   }
 
+  private boolean comparison(List<KeyValue> keyvalueList) {
+    // Do a comparison if initialized as a comparator
+    if (operator == null) return true;
+    String comparedAttribute;
+    KeyValue attrKV = null;
+    for (KeyValue keyvalue : keyvalueList) {
+      // Find the correct kv for attribute
+      comparedAttribute = Tuple.fromBytes(keyvalue.getKey()).getString(metadata.getPrimaryKeys().size());
+      if (comparedAttribute.equals(attrName)) {
+        attrKV = keyvalue;
+        break;
+      }
+    }
+    if (attrKV == null) return true;
+
+    // Do comparison
+    Object valueOf = Tuple.fromBytes(attrKV.getValue()).get(0);
+    if (operator == ComparisonOperator.EQUAL_TO) {
+      if (valueOf.equals(attrValue)) return true;
+      else return false;
+    }
+    if (operator == ComparisonOperator.GREATER_THAN) {
+      if (valueOf instanceof Integer) {
+        return (Integer) valueOf > (Integer) attrValue;
+      }
+      if (valueOf instanceof Long) {
+        return (Long) valueOf > (Long) attrValue;
+      }
+      if (valueOf instanceof Double) {
+        return (Double) valueOf > (Double) attrValue;
+      }
+      if (valueOf instanceof String) {
+        return ((String) valueOf).compareTo((String) attrValue) > 0;
+      }
+    };
+    if (operator == ComparisonOperator.LESS_THAN) {
+      if (valueOf instanceof Integer) {
+        return (Integer) valueOf < (Integer) attrValue;
+      }
+      if (valueOf instanceof Long) {
+        return (Long) valueOf < (Long) attrValue;
+      }
+      if (valueOf instanceof Double) {
+        return (Double) valueOf < (Double) attrValue;
+      }
+      if (valueOf instanceof String) {
+        return ((String) valueOf).compareTo((String) attrValue) < 0;
+      }
+    };
+    if (operator == ComparisonOperator.LESS_THAN_OR_EQUAL_TO) {
+      if (valueOf instanceof Integer) {
+        return (Integer) valueOf <= (Integer) attrValue;
+      }
+      if (valueOf instanceof Long) {
+        return (Long) valueOf <= (Long) attrValue;
+      }
+      if (valueOf instanceof Double) {
+        return (Double) valueOf <= (Double) attrValue;
+      }
+      if (valueOf instanceof String) {
+        return ((String) valueOf).compareTo((String) attrValue) <= 0;
+      }
+    };
+    if (operator == ComparisonOperator.GREATER_THAN_OR_EQUAL_TO) {
+      if (valueOf instanceof Integer) {
+        return (Integer) valueOf >= (Integer) attrValue;
+      }
+      if (valueOf instanceof Long) {
+        return (Long) valueOf >= (Long) attrValue;
+      }
+      if (valueOf instanceof Double) {
+        return (Double) valueOf >= (Double) attrValue;
+      }
+      if (valueOf instanceof String) {
+        return ((String) valueOf).compareTo((String) attrValue) >= 0;
+      }
+    };
+    return false;
+  }
   private Tuple getPKFromKeyValue(KeyValue keyvalue) {
     Tuple pk = new Tuple();
     //System.out.println("Size of primary keys: " + metadata.getPrimaryKeys().size());
@@ -139,9 +233,9 @@ public class Cursor {
     return pk;
   }
   private AsyncIterator<KeyValue> initialize(boolean reverse) {
-    Range range = subspace.range();
-    AsyncIterable<KeyValue> iterable = tx.getRange(range, ReadTransaction.ROW_LIMIT_UNLIMITED, reverse);
-    return iterable.iterator();
+      Range range = subspace.range();
+      AsyncIterable<KeyValue> iterable = tx.getRange(range, ReadTransaction.ROW_LIMIT_UNLIMITED, reverse);
+      return iterable.iterator();
   }
 
   private List<FDBKVPair> keyvalueToFDBKVPair(List<KeyValue> keyvalueList) {
@@ -168,6 +262,7 @@ public class Cursor {
     if (success) {
       startFromBeginning = null;
       iterator = null;
+      operator = null;
       return true;
     }
     return false;
