@@ -171,8 +171,8 @@ public class Cursor {
         list.remove(attrNames[i]);
         for (FDBKVPair kvpair : currRecord) {
           FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
-          Tuple newKey = new Tuple().addObject(attrNames[i]).addObject(kvpair.getKey().getString(metadata.getPrimaryKeys().size()));
-          Tuple newValue = new Tuple().addObject(attrValues[i]);
+          Tuple newKey = new Tuple().addObject(attrValues[i]).addObject(kvpair.getKey().getString(metadata.getPrimaryKeys().size()));
+          Tuple newValue = new Tuple().add(kvpair.getValue());
           FDBHelper.setFDBKVPair(subspace, tx, new FDBKVPair(path, newKey, newValue));
         }
       }
