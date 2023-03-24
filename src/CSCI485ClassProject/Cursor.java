@@ -23,7 +23,7 @@ public class Cursor {
   }
 
   // your code here
-  private final Mode mode;
+  private Mode mode;
   private final String tableName;
   private final DirectorySubspace subspace;
   private final TableMetadata metadata;
@@ -131,11 +131,22 @@ public class Cursor {
   }
 
   public StatusCode delete() {
+    if (mode == Mode.READ) return StatusCode.CURSOR_INVALID;
+    if (startFromBeginning == null) return StatusCode.CURSOR_NOT_INITIALIZED;
+    if (mode == null) return StatusCode.CURSOR_INVALID;
     if (currRecord == null) return StatusCode.CURSOR_REACH_TO_EOF;
     //System.out.println("attrname: " + currRecord.get(0).getKey().get(metadata.getPrimaryKeys().size()-1));
     for (FDBKVPair kvpair : currRecord) {
       FDBHelper.removeKeyValuePair(tx, subspace, kvpair.getKey());
     }
+    return StatusCode.SUCCESS;
+  }
+
+  public StatusCode update(String[] attrNames, Object[] attrValues) {
+    if (mode == Mode.READ) return StatusCode.CURSOR_INVALID;
+    if (startFromBeginning == null) return StatusCode.CURSOR_NOT_INITIALIZED;
+    if (mode == null) return StatusCode.CURSOR_INVALID;
+    if (currRecord == null) return StatusCode.CURSOR_REACH_TO_EOF;
     return StatusCode.SUCCESS;
   }
 
@@ -325,6 +336,7 @@ public class Cursor {
       startFromBeginning = null;
       iterator = null;
       operator = null;
+      mode = null;
       return true;
     }
     return false;

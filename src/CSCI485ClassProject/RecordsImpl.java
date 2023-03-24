@@ -198,7 +198,7 @@ public class RecordsImpl implements Records{
 
   @Override
   public StatusCode updateRecord(Cursor cursor, String[] attrNames, Object[] attrValues) {
-    return null;
+    return cursor.update(attrNames, attrValues);
   }
 
   @Override
