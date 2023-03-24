@@ -185,7 +185,7 @@ public class Cursor {
       }
       if (valueOf instanceof Long) {
         if (attrValue instanceof Integer)  return ((Long) valueOf).intValue() == (Integer) attrValue;
-        return ((Long) valueOf).equals((Long) attrValue);
+        return ((Long) valueOf).longValue() == ((Long) attrValue).longValue();
       }
       if (valueOf instanceof Double) {
         return ((Double) valueOf).equals((Double) attrValue);
