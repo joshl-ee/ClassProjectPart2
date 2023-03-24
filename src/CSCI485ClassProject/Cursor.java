@@ -150,7 +150,7 @@ public class Cursor {
     KeyValue attrKV = null;
     for (KeyValue keyvalue : keyvalueList) {
       // Find the correct kv for attribute
-      comparedAttribute = Tuple.fromBytes(keyvalue.getKey()).getString(metadata.getPrimaryKeys().size());
+      comparedAttribute = Tuple.fromBytes(keyvalue.getKey()).getString(metadata.getPrimaryKeys().size()+1);
       if (comparedAttribute.equals(attrName)) {
         attrKV = keyvalue;
         break;
